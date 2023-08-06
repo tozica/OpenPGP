@@ -1,0 +1,6 @@
+ttkthemes
+rsa
+elgamal
+ecdsa
+cryptography
+pycryptodomex

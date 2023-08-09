@@ -9,11 +9,11 @@ class FilePicker:
             ('All files', '*.*')
         )
 
-        self.filename = fd.askdirectory(
+        self.directory = fd.askdirectory(
             title='Open folder',
             initialdir='/')
 
         showinfo(
             title='Selected Folder',
-            message=self.filename
+            message=self.directory
         )

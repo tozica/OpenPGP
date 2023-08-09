@@ -1,5 +1,6 @@
 from tkinter import ttk
 
+from gui.FilePicker import FilePicker
 from gui.TextPreviewPopup import TextPreviewPopup
 from key_rings.key_ring import KeyRing
 
@@ -48,7 +49,7 @@ class PublicKeyRingTable:
 
             export_label = ttk.Label(table_frame, text='Export public', borderwidth=1, relief="solid")
             export_label.grid(row=row_idx + 2, column=8, sticky="nsew")
-            export_label.bind("<Button-1>", ring.export_public_key)
+            export_label.bind("<Button-1>", lambda event, arg=ring: self.export_public_ring(ring))
 
             delete_label = ttk.Label(table_frame, text='Delete', borderwidth=1, relief="solid")
             delete_label.grid(row=row_idx + 2, column=10, sticky="nsew")
@@ -56,6 +57,12 @@ class PublicKeyRingTable:
 
         for row_idx in range(len(self.button_data) + 2):
             table_frame.grid_rowconfigure(row_idx, weight=1)
+
+    @staticmethod
+    def export_public_ring(ring: KeyRing):
+        file_picker = FilePicker()
+        ring.export_public_key(file_picker.directory)
+
 
     def delete_from_table(self, ring):
         KeyRing.key_rings.remove(ring)

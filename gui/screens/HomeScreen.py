@@ -4,6 +4,7 @@ from tkinter import ttk
 from gui.dialogs.GenerateKeyForm import GenerateKeyForm
 from gui.tables.PrivateKeyRingTable import PrivateKeyRingTable
 from gui.tables.PublicKeyRingTable import PublicKeyRingTable
+from gui.tables.UserListTable import UserListTable
 
 
 class HomeScreen:
@@ -32,8 +33,7 @@ class HomeScreen:
     def create_tables(self):
         table_frame = ttk.Frame(self.root, width=1000, height=1000)
         table_frame.pack(side=tkinter.BOTTOM, pady=10)
-        PrivateKeyRingTable(self.root, table_frame, self)
-        PublicKeyRingTable(self.root, table_frame, self)
+        UserListTable(self.root, table_frame, self)
 
     def render(self):
         self.clear_window()

@@ -14,6 +14,7 @@ class KeyRing(ABC):
     user_name: string
 
     key_rings = []
+    key_rings_by_user = {}
 
     def __init__(self, timestamp, key_id, public_key, user_id, email, algorithm, key_size, user_name):
         self.timestamp = timestamp

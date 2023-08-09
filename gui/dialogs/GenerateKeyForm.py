@@ -65,17 +65,29 @@ class GenerateKeyForm:
 
                 mask = (1 << 64) - 1
 
-                KeyRing.key_rings.append(
-                    RSAKeyRing(date.today(), public_rsa.e & mask, public_rsa.e, email, email, "RSA", int(key_size), name,
-                               private_rsa, public_rsa))
+                rsa_key_ring = RSAKeyRing(date.today(), public_rsa.e & mask, public_rsa.e, email, email, "RSA",
+                                          int(key_size), name, private_rsa, public_rsa)
+
+                KeyRing.key_rings.append(rsa_key_ring)
+
+                if email in KeyRing.key_rings_by_user:
+                    KeyRing.key_rings_by_user[email].append(rsa_key_ring)
+                else:
+                    KeyRing.key_rings_by_user[email] = [rsa_key_ring]
+
             elif selected_algorithm == "Elgamal & DSA":
                 (public_elgamal, private_elgamal) = Elgamal.newkeys(int(key_size))
 
                 mask = (1 << 64) - 1
+                elgamal_key_ring = ElgamalKeyRing(date.today(), public_elgamal.y & mask, public_elgamal.y, email, email,
+                                                  "Elgamal & DSA", int(key_size), name, private_elgamal, public_elgamal)
 
-                KeyRing.key_rings.append(
-                    ElgamalKeyRing(date.today(), public_elgamal.y & mask, public_elgamal.y, email, email, "Elgamal & DSA",
-                                   int(key_size), name, private_elgamal, public_elgamal))
+                KeyRing.key_rings.append(elgamal_key_ring)
+
+                if email in KeyRing.key_rings_by_user:
+                    KeyRing.key_rings_by_user[email].append(elgamal_key_ring)
+                else:
+                    KeyRing.key_rings_by_user[email] = [elgamal_key_ring]
 
             new_form.destroy()
             parent.render()

@@ -2,11 +2,11 @@ import tkinter as tk
 from datetime import date
 from tkinter import ttk
 
-from des3_utils.des3_utils import perform_encrypt
+from utils.des3_utils.des3_utils import perform_encrypt
 from key_rings.elgamal_key_ring.elgamal_key_ring import ElgamalKeyRing
 from key_rings.key_ring import KeyRing
 from key_rings.rsa_key_ring.rsa_key_ring import RSAKeyRing
-from rsa_util import rsa_util
+from utils.rsa_util import rsa_util
 from elgamal.elgamal import Elgamal
 
 

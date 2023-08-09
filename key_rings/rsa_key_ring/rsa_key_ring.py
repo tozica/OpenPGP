@@ -3,8 +3,7 @@ from rsa import PrivateKey, PublicKey
 import json
 from key_rings.key_ring import KeyRing
 
-# columns = ['Timestamp', 'Key ID', 'Public Key', 'Encrypted Private Key', 'User ID', 'Algorithm',
-#            'User Name', 'Key Size', 'Export private', 'Delete']
+
 class RSAKeyRing(KeyRing):
     private_key_rsa: PrivateKey
     public_key_rsa: PublicKey
@@ -29,10 +28,10 @@ class RSAKeyRing(KeyRing):
         with open(metadata_file_path, 'w', encoding='utf-8') as metadata_file:
             json.dump(metadata, metadata_file, ensure_ascii=False, indent=4)
 
-        public_ket_pem_content = self.public_key_rsa.save_pkcs1(format="PEM")
+        public_key_pem_content = self.public_key_rsa.save_pkcs1(format="PEM")
 
         with open(pem_file_path, 'wb') as pem_file:
-            pem_file.write(public_ket_pem_content)
+            pem_file.write(public_key_pem_content)
 
         pass
 
@@ -50,10 +49,10 @@ class RSAKeyRing(KeyRing):
         with open(metadata_file_path, 'w', encoding='utf-8') as metadata_file:
             json.dump(metadata, metadata_file, ensure_ascii=False, indent=4)
 
-        private_ket_pem_content = self.private_key_rsa.save_pkcs1(format="PEM")
+        private_key_pem_content = self.private_key_rsa.save_pkcs1(format="PEM")
 
         with open(pem_file_path, 'wb') as pem_file:
-            pem_file.write(private_ket_pem_content)
+            pem_file.write(private_key_pem_content)
 
         pass
 

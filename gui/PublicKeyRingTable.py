@@ -63,7 +63,6 @@ class PublicKeyRingTable:
         file_picker = FilePicker()
         ring.export_public_key(file_picker.directory)
 
-
     def delete_from_table(self, ring):
         KeyRing.key_rings.remove(ring)
         self.parent.render()

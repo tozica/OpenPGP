@@ -66,11 +66,20 @@ class PrivateKeyRingTable:
         for row_idx in range(len(self.button_data) + 2):
             table_frame.grid_rowconfigure(row_idx, weight=1)
 
+    def clear_window(self):
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+
+    def render(self):
+        self.clear_window()
+        self.create_table()
+
+    def delete_from_table(self, ring):
+        KeyRing.key_rings_by_user[self.email].remove(ring)
+        self.render()
+
     @staticmethod
     def export_private_ring(ring: KeyRing):
         file_picker = FilePicker()
         ring.export_private_key(file_picker.directory)
 
-    def delete_from_table(self, ring):
-        KeyRing.key_rings.remove(ring)
-        self.parent.render()

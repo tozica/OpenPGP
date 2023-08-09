@@ -23,7 +23,6 @@ class PrivateKeyRingDialog:
 
         def close():
             dialog_private_key_table.destroy()
-            parent.render()
 
         confirm_button = ttk.Button(frame, text="Close", command=close)
         confirm_button.grid(row=5, columnspan=2, pady=10)

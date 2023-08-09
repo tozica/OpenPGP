@@ -49,7 +49,8 @@ class UserListTable:
             show_public_ring_button = ttk.Button(actions_frame, text="Public Ring",
                                                  command=lambda email=user_email, key_ring=key_rings:
                                                  PublicKeyRingDialog(self.root, self, email, key_ring))
-            delete_user_button = ttk.Button(actions_frame, text="Delete User")
+            delete_user_button = ttk.Button(actions_frame, text="Delete User",
+                                            command=lambda email=user_email: self.delete_user(email))
 
             show_private_ring_button.grid(row=0, column=0)
             show_public_ring_button.grid(row=0, column=1)
@@ -57,3 +58,7 @@ class UserListTable:
 
         for row_idx in range(len(self.button_data) + 2):
             table_frame.grid_rowconfigure(row_idx, weight=1)
+
+    def delete_user(self, email):
+        del KeyRing.key_rings_by_user[email]
+        self.parent.render()

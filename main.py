@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from gui.HomeScreen import HomeScreen
+from gui.screens.HomeScreen import HomeScreen
 
 
 def main():

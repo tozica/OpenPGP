@@ -1,9 +1,9 @@
 import tkinter.constants
 from tkinter import ttk
 
-from gui.GenerateKeyForm import GenerateKeyForm
-from gui.PrivateKeyRingTable import PrivateKeyRingTable
-from gui.PublicKeyRingTable import PublicKeyRingTable
+from gui.dialogs.GenerateKeyForm import GenerateKeyForm
+from gui.tables.PrivateKeyRingTable import PrivateKeyRingTable
+from gui.tables.PublicKeyRingTable import PublicKeyRingTable
 
 
 class HomeScreen:

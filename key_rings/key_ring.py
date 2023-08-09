@@ -33,6 +33,16 @@ class KeyRing(ABC):
     def export_private_key(self, path):
         pass
 
+    @classmethod
+    @abstractmethod
+    def import_private_key(cls, path):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def import_public_key(cls, path):
+        pass
+
     @abstractmethod
     def get_public_key_as_string(self):
         pass
@@ -42,9 +52,17 @@ class KeyRing(ABC):
         pass
 
     @abstractmethod
-    def get_public_key_as_object(self):
+    def get_public_key(self):
         pass
 
     @abstractmethod
-    def get_private_key_as_object(self):
+    def get_private_key(self):
+        pass
+
+    @abstractmethod
+    def set_public_key(self, public_key):
+        pass
+
+    @abstractmethod
+    def set_private_key(self, private_key):
         pass

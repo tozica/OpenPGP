@@ -1,9 +1,5 @@
 import rsa as rs
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import serialization
 from key_rings.enumerations import KEY
-from key_rings.private_key_ring import PrivateKeyRing
 
 
 def generate_keys(nbits):
@@ -22,13 +18,13 @@ def import_from_file(path, keyType):
     return key
 
 
-def export_public_to_file(path, key: PrivateKeyRing):
-    public_key = rsa.RSAPublicNumbers(key.e, key.n).public_key()
-
-    pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
-    )
-
-    with open(path, 'wb') as pem_file:
-        pem_file.write(pem)
+# def export_public_to_file(path, key: PrivateKeyRing):
+#     public_key = rsa.RSAPublicNumbers(key.e, key.n).public_key()
+#
+#     pem = public_key.public_bytes(
+#         encoding=serialization.Encoding.PEM,
+#         format=serialization.PublicFormat.SubjectPublicKeyInfo
+#     )
+#
+#     with open(path, 'wb') as pem_file:
+#         pem_file.write(pem)

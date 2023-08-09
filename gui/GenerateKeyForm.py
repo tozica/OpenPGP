@@ -3,8 +3,11 @@ from datetime import date
 from tkinter import ttk
 
 from des3_utils.des3_utils import perform_encrypt
-from key_rings.private_key_ring import privateKeyRing, PrivateKeyRing
+from key_rings.elgamal_key_ring.elgamal_key_ring import ElgamalKeyRing
+from key_rings.key_ring import KeyRing
+from key_rings.rsa_key_ring.rsa_key_ring import RSAKeyRing
 from rsa_util import rsa_util
+from elgamal.elgamal import Elgamal
 
 
 class GenerateKeyForm:
@@ -55,17 +58,24 @@ class GenerateKeyForm:
             selected_algorithm = algorithm_var.get()
             password = password_entry.get()
 
-            (public, private) = rsa_util.generate_keys(int(key_size))
+            if selected_algorithm == "RSA":
+                (public_rsa, private_rsa) = rsa_util.generate_keys(int(key_size))
 
-            key, encrypt_d, salt = perform_encrypt(private.d, password)
+                key, encrypt_d, salt = perform_encrypt(private_rsa.d, password)
 
-            mask = (1 << 64) - 1
+                mask = (1 << 64) - 1
 
-            privateKeyRing.append(
-                PrivateKeyRing(date.today(), public.e, encrypt_d, private.n, email, "RSA", name, int(key_size), key,
-                               public.e & mask, salt))
+                KeyRing.key_rings.append(
+                    RSAKeyRing(date.today(), public_rsa.e & mask, public_rsa.e, email, email, "RSA", int(key_size), name,
+                               private_rsa, public_rsa))
+            elif selected_algorithm == "Elgamal & DSA":
+                (public_elgamal, private_elgamal) = Elgamal.newkeys(int(key_size))
 
-            print(privateKeyRing)
+                mask = (1 << 64) - 1
+
+                KeyRing.key_rings.append(
+                    ElgamalKeyRing(date.today(), public_elgamal.y & mask, public_elgamal.y, email, email, "Elgamal & DSA",
+                                   int(key_size), name, private_elgamal, public_elgamal))
 
             new_form.destroy()
             parent.render()

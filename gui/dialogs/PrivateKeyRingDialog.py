@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter.constants import TOP
+
 from gui.tables.PrivateKeyRingTable import PrivateKeyRingTable
+from gui.tables.UserDetailsTable import UserDetailsTable
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
 
@@ -18,6 +21,10 @@ class PrivateKeyRingDialog:
         style = ttk.Style()
         style.configure("TLabel", font=("Helvetica", 12))
         style.configure("TButton", font=("Helvetica", 12))
+
+        user_information_fame = ttk.Frame(dialog_private_key_table)
+        user_information_fame.pack(side=TOP)
+        UserDetailsTable(self.root, user_information_fame, self, self.email)
 
         frame = ttk.Frame(dialog_private_key_table, padding=20)
         frame.pack(fill="both", expand=True)

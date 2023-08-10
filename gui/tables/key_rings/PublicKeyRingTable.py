@@ -1,8 +1,7 @@
 from tkinter import ttk
 
-from gui.dialogs.FilePicker import FilePicker
-from gui.dialogs.TextPreviewPopup import TextPreviewPopup
-from key_rings.base_key_ring.key_ring import KeyRing
+from gui.dialogs.general.FilePicker import FilePicker
+from gui.dialogs.general.TextPreviewPopup import TextPreviewPopup
 from key_rings.base_key_ring.public_key_ring import PublicKeyRing
 
 

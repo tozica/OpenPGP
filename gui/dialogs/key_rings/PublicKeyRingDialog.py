@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from gui.tables.PublicKeyRingTable import PublicKeyRingTable
+from gui.tables.key_rings.PublicKeyRingTable import PublicKeyRingTable
 from key_rings.base_key_ring.public_key_ring import PublicKeyRing
 
 

@@ -1,7 +1,6 @@
 from tkinter import ttk
-from gui.dialogs.PrivateKeyRingDialog import PrivateKeyRingDialog
-from gui.dialogs.PublicKeyRingDialog import PublicKeyRingDialog
-from key_rings.base_key_ring.key_ring import KeyRing
+from gui.dialogs.key_rings.PrivateKeyRingDialog import PrivateKeyRingDialog
+from gui.dialogs.key_rings.PublicKeyRingDialog import PublicKeyRingDialog
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 from key_rings.base_key_ring.public_key_ring import PublicKeyRing
 

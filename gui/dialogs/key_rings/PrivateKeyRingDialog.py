@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.constants import TOP
 
-from gui.tables.PrivateKeyRingTable import PrivateKeyRingTable
-from gui.tables.UserDetailsTable import UserDetailsTable
+from gui.tables.key_rings.PrivateKeyRingTable import PrivateKeyRingTable
+from gui.tables.user.UserDetailsTable import UserDetailsTable
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
 

@@ -2,7 +2,8 @@ from tkinter import ttk
 
 from gui.dialogs.FilePicker import FilePicker
 from gui.dialogs.TextPreviewPopup import TextPreviewPopup
-from key_rings.key_ring import KeyRing
+from key_rings.base_key_ring.key_ring import KeyRing
+from key_rings.base_key_ring.public_key_ring import PublicKeyRing
 
 
 class PublicKeyRingTable:
@@ -20,8 +21,8 @@ class PublicKeyRingTable:
         self.create_table()
 
     @staticmethod
-    def create_table_row_public_ring(key: KeyRing):
-        return [key.timestamp, key.key_id, key.get_public_key_as_string(), key.email, key.algorithm, key.user_name,
+    def create_table_row_public_ring(key: PublicKeyRing):
+        return [key.timestamp, key.key_id, key.public_key, key.user_id, key.algorithm, key.user_name,
                 key.key_size]
 
     def create_table(self):
@@ -70,11 +71,11 @@ class PublicKeyRingTable:
         self.create_table()
 
     def delete_from_table(self, ring):
-        KeyRing.public_key_ring_by_user[self.email].remove(ring)
+        PublicKeyRing.delete_row(self.email, ring)
         self.render()
 
     @staticmethod
-    def export_public_ring(ring: KeyRing):
+    def export_public_ring(ring: PublicKeyRing):
         file_picker = FilePicker()
         ring.export_public_key(file_picker.directory)
 

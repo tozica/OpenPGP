@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from gui.tables.PrivateKeyRingTable import PrivateKeyRingTable
-from key_rings.key_ring import KeyRing
+from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
 
 class PrivateKeyRingDialog:
@@ -9,7 +9,8 @@ class PrivateKeyRingDialog:
         self.root = root
         self.parent = parent
         self.email = email
-        self.key_rings = KeyRing.private_key_ring_by_user[email] if email in KeyRing.private_key_ring_by_user else []
+        self.key_rings = (
+            PrivateKeyRing.private_key_ring_by_user)[email] if email in PrivateKeyRing.private_key_ring_by_user else []
 
         dialog_private_key_table = tk.Toplevel(self.root)
         dialog_private_key_table.title("Private key ring for " + self.email)

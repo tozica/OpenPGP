@@ -1,19 +1,22 @@
 import re
+
 import rsa as rs
 from rsa import PrivateKey, PublicKey
 import json
-from key_rings.key_ring import KeyRing
+from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
 
-class RSAKeyRing(KeyRing):
+class RSAPrivateKeyRing(PrivateKeyRing):
     private_key_rsa: PrivateKey
     public_key_rsa: PublicKey
 
-    def __init__(self, timestamp, key_id, public_key, user_id, email, algorithm, key_size, user_name, private_key_rsa,
-                 public_key_rsa) -> None:
-        super().__init__(timestamp, key_id, public_key, user_id, email, algorithm, key_size, user_name)
+    def __init__(self, timestamp, user_id, email, algorithm, key_size, user_name,
+                 encrypted_private_key, key_from_password, private_key_rsa, public_key_rsa) -> None:
+        super().__init__(timestamp, user_id, email, algorithm, key_size, user_name, encrypted_private_key,
+                         key_from_password)
         self.private_key_rsa = private_key_rsa
         self.public_key_rsa = public_key_rsa
+        self.public_key = self.get_public_key_as_string()
 
     def export_public_key(self, path):
         pem_file_path = path + '/' + self.user_name + '_public.pem'
@@ -73,15 +76,7 @@ class RSAKeyRing(KeyRing):
         with open(metadata_file_path, mode='r') as metadata_file:
             metadata = json.load(metadata_file)
 
-        key_ring: KeyRing = next((ring for ring in KeyRing.key_rings if ring.user_id == metadata.user_id), None)
-        if key_ring is None:
-            key_ring = RSAKeyRing(metadata.timestamp, 0, 0, metadata.user_id, metadata.email,
-                                  metadata.algorithm, metadata.key_size, metadata.user_name, private_key_rsa, None)
-            KeyRing.key_rings.append(key_ring)
-        else:
-            key_ring.set_private_key(private_key_rsa)
-
-        return key_ring
+        # still not done
         pass
 
     @classmethod
@@ -98,15 +93,7 @@ class RSAKeyRing(KeyRing):
         with open(metadata_file_path, mode='r') as metadata_file:
             metadata = json.load(metadata_file)
 
-        key_ring: KeyRing = next((ring for ring in KeyRing.key_rings if ring.user_id == metadata.user_id), None)
-        if key_ring is None:
-            key_ring = RSAKeyRing(metadata.timestamp, 0, 0, metadata.user_id, metadata.email,
-                                  metadata.algorithm, metadata.key_size, metadata.user_name, None, public_key_rsa)
-            KeyRing.key_rings.append(key_ring)
-        else:
-            key_ring.set_public_key(public_key_rsa)
-
-        return key_ring
+        # still not done
         pass
 
     def get_public_key_as_string(self):

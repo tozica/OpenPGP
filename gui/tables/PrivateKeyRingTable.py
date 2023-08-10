@@ -75,7 +75,7 @@ class PrivateKeyRingTable:
         self.create_table()
 
     def delete_from_table(self, ring):
-        KeyRing.key_rings_by_user[self.email].remove(ring)
+        KeyRing.private_key_ring_by_user[self.email].remove(ring)
         self.render()
 
     @staticmethod

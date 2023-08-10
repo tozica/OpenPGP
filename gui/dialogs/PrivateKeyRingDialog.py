@@ -1,14 +1,15 @@
 import tkinter as tk
 from tkinter import ttk
 from gui.tables.PrivateKeyRingTable import PrivateKeyRingTable
+from key_rings.key_ring import KeyRing
 
 
 class PrivateKeyRingDialog:
-    def __init__(self, root, parent, email, key_rings):
+    def __init__(self, root, parent, email):
         self.root = root
         self.parent = parent
         self.email = email
-        self.key_rings = key_rings
+        self.key_rings = KeyRing.private_key_ring_by_user[email] if email in KeyRing.private_key_ring_by_user else []
 
         dialog_private_key_table = tk.Toplevel(self.root)
         dialog_private_key_table.title("Private key ring for " + self.email)

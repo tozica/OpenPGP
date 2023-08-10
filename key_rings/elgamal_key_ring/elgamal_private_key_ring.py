@@ -1,5 +1,8 @@
+import json
 
+from cryptography.utils import int_to_bytes
 from elgamal.elgamal import PrivateKey, PublicKey
+from rsa.pem import save_pem
 
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
@@ -17,11 +20,46 @@ class ElgamalPrivateKeyRing(PrivateKeyRing):
         self.public_key = self.get_public_key_as_string()
 
     def export_public_key(self, path):
-        return NotImplemented
+        pem_file_path = path + '/' + self.user_name + '_public.pem'
+        metadata_file_path = path + '/' + '.metadata'
+        metadata = {
+            "timestamp": str(self.timestamp),
+            "key_id": self.key_id,
+            "user_id": self.user_id,
+            "email": self.email,
+            "algorithm": self.algorithm,
+            "user_name": self.user_name,
+            "key_size": self.key_size
+        }
+        with open(metadata_file_path, 'w', encoding='utf-8') as metadata_file:
+            json.dump(metadata, metadata_file, ensure_ascii=False, indent=4)
+
+        public_key_pem_content = save_pem(int_to_bytes(self.public_key_elgamal.y), "ELGAMAL PUBLIC KEY")
+
+        with open(pem_file_path, 'wb') as pem_file:
+            pem_file.write(public_key_pem_content)
         pass
 
     def export_private_key(self, path):
-        return NotImplemented
+        pem_file_path = path + '/' + self.user_name + '_private.pem'
+        metadata_file_path = path + '/' + '.metadata'
+        metadata = {
+            "timestamp": str(self.timestamp),
+            "key_id": self.key_id,
+            "user_id": self.user_id,
+            "email": self.email,
+            "algorithm": self.algorithm,
+            "user_name": self.user_name,
+            "key_size": self.key_size
+        }
+        with open(metadata_file_path, 'w', encoding='utf-8') as metadata_file:
+            json.dump(metadata, metadata_file, ensure_ascii=False, indent=4)
+
+        private_key_pem_content = save_pem(int_to_bytes(self.private_key_elgamal.x), "ELGAMAL PRIVATE KEY")
+
+        with open(pem_file_path, 'wb') as pem_file:
+            pem_file.write(private_key_pem_content)
+        pass
         pass
 
     @classmethod

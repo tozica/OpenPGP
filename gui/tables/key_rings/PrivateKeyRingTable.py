@@ -1,4 +1,4 @@
-from tkinter import ttk
+from tkinter import ttk, BOTTOM
 from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.general.TextPreviewPopup import TextPreviewPopup
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
@@ -25,7 +25,7 @@ class PrivateKeyRingTable:
 
     def create_table(self):
         table_frame = ttk.Frame(self.frame)
-        table_frame.grid(row=0, column=0)
+        table_frame.pack(side=BOTTOM)
 
         headline_label = ttk.Label(table_frame, text="Private keys ring")
         headline_label.grid(row=0, columnspan=10)

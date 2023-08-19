@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, TOP, RIGHT
+from tkinter import ttk, TOP, RIGHT, BOTTOM
 
 from gui.dialogs.general.FilePicker import FilePicker
 from gui.tables.key_rings.PublicKeyRingTable import PublicKeyRingTable
@@ -22,24 +22,24 @@ class PublicKeyRingDialog:
         style.configure("TLabel", font=("Helvetica", 12))
         style.configure("TButton", font=("Helvetica", 12))
 
-        user_information_fame = ttk.Frame(dialog_private_key_table)
+        dialog_frame = ttk.Frame(dialog_private_key_table)
+        dialog_frame.pack(fill="both", expand=True)
+
+        user_information_fame = ttk.Frame(dialog_frame)
         user_information_fame.pack(side=TOP)
         UserDetailsTable(self.root, user_information_fame, self, self.email)
-
-        frame = ttk.Frame(dialog_private_key_table, padding=20)
-        frame.pack(fill="both", expand=True)
 
         import_key_button = ttk.Button(user_information_fame, text="Import Key",
                                        command=lambda arg=email: self.import_public_ring(arg))
         import_key_button.pack(side=RIGHT)
 
-        PublicKeyRingTable(self.root, frame, self.parent, self.email, self.key_rings)
+        PublicKeyRingTable(self.root, dialog_frame, self.parent, self.email, self.key_rings)
 
         def close():
             dialog_private_key_table.destroy()
 
-        confirm_button = ttk.Button(frame, text="Close", command=close)
-        confirm_button.grid(row=5, columnspan=2, pady=10)
+        confirm_button = ttk.Button(user_information_fame, text="Close", command=close)
+        confirm_button.pack(side=RIGHT)
 
     @staticmethod
     def import_public_ring(email):

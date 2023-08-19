@@ -1,4 +1,4 @@
-from tkinter import ttk
+from tkinter import ttk, LEFT
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
 
@@ -22,7 +22,7 @@ class UserDetailsTable:
 
     def create_table(self):
         table_frame = ttk.Frame(self.frame)
-        table_frame.grid(row=1, column=0)
+        table_frame.pack(side=LEFT)
 
         headline_label = ttk.Label(table_frame, text="User Information")
         headline_label.grid(row=0, columnspan=4)

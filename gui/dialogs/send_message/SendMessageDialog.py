@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, TOP, RIGHT, BOTTOM, LEFT
 
+from gui.dialogs.sign_message.SignMessageDialog import SignMessageDialog
+
 
 class SendMessageDialog:
     def __init__(self, root, parent, email, ring):
@@ -8,6 +10,7 @@ class SendMessageDialog:
         self.parent = parent
         self.email = email
         self.ring = ring
+        self.private_key_for_sign = None
         self.send_message_dialog = tk.Toplevel(self.root)
         self.send_message_dialog.title("Send message")
         self.dialog_frame = ttk.Frame(self.send_message_dialog)
@@ -24,7 +27,7 @@ class SendMessageDialog:
         options_frame = tk.Frame(self.dialog_frame)
         options_frame.pack(side=TOP)
 
-        sign_message_button = tk.Button(options_frame, text="Sign Message")
+        sign_message_button = tk.Button(options_frame, text="Sign Message", command=self.sign_message)
         sign_message_button.pack(side=LEFT)
         compress_enabled = tk.IntVar()
         compress_check_box = tk.Checkbutton(options_frame, text="Compress Message", variable=compress_enabled)
@@ -47,4 +50,8 @@ class SendMessageDialog:
         commands_frame.pack(side=RIGHT)
         send_message_button = tk.Button(bottom_frame, text="Send message")
         send_message_button.pack(side=BOTTOM)
+        pass
+
+    def sign_message(self):
+        SignMessageDialog(self.root, self, self.email, self.ring)
         pass

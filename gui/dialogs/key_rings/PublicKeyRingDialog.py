@@ -1,7 +1,11 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, TOP, RIGHT
+
+from gui.dialogs.general.FilePicker import FilePicker
 from gui.tables.key_rings.PublicKeyRingTable import PublicKeyRingTable
+from gui.tables.user.UserDetailsTable import UserDetailsTable
 from key_rings.base_key_ring.public_key_ring import PublicKeyRing
+from key_rings.rsa_key_ring.rsa_public_key_ring import RSAPublicKeyRing
 
 
 class PublicKeyRingDialog:
@@ -18,11 +22,16 @@ class PublicKeyRingDialog:
         style.configure("TLabel", font=("Helvetica", 12))
         style.configure("TButton", font=("Helvetica", 12))
 
+        user_information_fame = ttk.Frame(dialog_private_key_table)
+        user_information_fame.pack(side=TOP)
+        UserDetailsTable(self.root, user_information_fame, self, self.email)
+
         frame = ttk.Frame(dialog_private_key_table, padding=20)
         frame.pack(fill="both", expand=True)
 
-        import_key_button = ttk.Button(frame, text="Import Key")
-        import_key_button.grid(row=0, column=1, pady=10)
+        import_key_button = ttk.Button(user_information_fame, text="Import Key",
+                                       command=lambda arg=email: self.import_public_ring(arg))
+        import_key_button.pack(side=RIGHT)
 
         PublicKeyRingTable(self.root, frame, self.parent, self.email, self.key_rings)
 
@@ -31,3 +40,9 @@ class PublicKeyRingDialog:
 
         confirm_button = ttk.Button(frame, text="Close", command=close)
         confirm_button.grid(row=5, columnspan=2, pady=10)
+
+    @staticmethod
+    def import_public_ring(email):
+        file_picker = FilePicker()
+        RSAPublicKeyRing.import_public_key(file_picker.filename, email)
+    pass

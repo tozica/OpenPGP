@@ -1,6 +1,5 @@
 from tkinter import ttk
-
-from gui.dialogs.general.FilePicker import FilePicker
+from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.general.TextPreviewPopup import TextPreviewPopup
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
@@ -83,10 +82,10 @@ class PrivateKeyRingTable:
 
     @staticmethod
     def export_private_ring(ring: PrivateKeyRing):
-        file_picker = FilePicker()
+        file_picker = FolderPicker()
         ring.export_private_key(file_picker.directory)
 
     @staticmethod
     def export_public_ring(ring: PrivateKeyRing):
-        file_picker = FilePicker()
+        file_picker = FolderPicker()
         ring.export_public_key(file_picker.directory)

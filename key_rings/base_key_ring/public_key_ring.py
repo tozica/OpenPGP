@@ -1,5 +1,4 @@
 import string
-import uuid
 from abc import ABC
 
 from key_rings.base_key_ring.key_ring import KeyRing
@@ -15,9 +14,14 @@ class PublicKeyRing(KeyRing, ABC):
 
     public_key_ring_by_user = {}
 
-    def __init__(self, timestamp, user_id, email, algorithm, key_size, user_name):
+    def __init__(self, timestamp, user_id, email, algorithm, key_size, user_name, key_id):
         super().__init__(timestamp, user_id, email, algorithm, key_size, user_name)
-        self.key_id = uuid.uuid4().int
+        self.key_id = key_id
+        # unclear how to initialize field below
+        self.key_legitimacy = 0
+        self.owner_trust = 1
+        self.signature = ""
+        self.signature_trust = 1
 
     @classmethod
     def insert_row(cls, email, key_ring):

@@ -64,13 +64,8 @@ class PublicKeyRingTable:
         for row_idx in range(len(self.button_data) + 2):
             table_frame.grid_rowconfigure(row_idx, weight=1)
 
-    def clear_window(self):
-        for widget in self.frame.winfo_children():
-            widget.destroy()
-
     def render(self):
-        self.clear_window()
-        self.create_table()
+        self.parent.render()
 
     def delete_from_table(self, ring):
         PublicKeyRing.delete_row(self.email, ring)

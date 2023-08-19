@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, TOP, RIGHT, BOTTOM
+from tkinter import ttk, TOP, RIGHT
 
 from gui.dialogs.general.FilePicker import FilePicker
 from gui.tables.key_rings.PublicKeyRingTable import PublicKeyRingTable

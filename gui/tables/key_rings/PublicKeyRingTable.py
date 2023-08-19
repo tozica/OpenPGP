@@ -1,6 +1,7 @@
 from tkinter import ttk, BOTTOM
 from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.general.TextPreviewPopup import TextPreviewPopup
+from gui.dialogs.send_message.SendMessageDialog import SendMessageDialog
 from key_rings.base_key_ring.public_key_ring import PublicKeyRing
 
 
@@ -72,6 +73,7 @@ class PublicKeyRingTable:
         self.render()
 
     def send_message(self, ring):
+        SendMessageDialog(self.root, self, self.email, ring)
         pass
 
     @staticmethod

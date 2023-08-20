@@ -96,16 +96,6 @@ class SendMessageDialog:
                 key_cipher_tuple = encrypt_message(json.dumps(package))
                 pass
 
-            # compress message if needed
-            if compress_enabled.get() == 1:
-                # compress message (zip)
-                pass
-
-            # convert message if needed
-            if convert_enabled.get() == 1:
-                # convert message (radix-64)
-                pass
-
             encrypted_session_key = self.ring.encrypt_session_key(key_cipher_tuple[0])
             key_id_recipient_public_key = self.ring.key_id
             package_to_send = {
@@ -115,6 +105,16 @@ class SendMessageDialog:
                 },
                 "encrypted_data": str(key_cipher_tuple[1])
             }
+
+            # compress message if needed
+            if compress_enabled.get() == 1:
+                # compress message (zip)
+                pass
+
+            # convert message if needed
+            if convert_enabled.get() == 1:
+                # convert message (radix-64)
+                pass
 
             with open(self.send_path, 'w', encoding='utf-8') as send_file:
                 json.dump(json.dumps(package_to_send), send_file, ensure_ascii=False, indent=4)

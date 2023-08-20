@@ -1,3 +1,4 @@
+import base64
 import json
 import tkinter as tk
 from tkinter import ttk
@@ -7,6 +8,7 @@ from gui.dialogs.general.FilePicker import FilePicker
 from gui.tables.key_rings.PrivateKeyRingTable import PrivateKeyRingTable
 from gui.tables.user.UserDetailsTable import UserDetailsTable
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
+from utils.des3_utils.des3_utils import decrypt_message
 
 
 class PrivateKeyRingDialog:
@@ -60,11 +62,17 @@ class PrivateKeyRingDialog:
         with open(received_file_path, mode='r') as received_file:
             unpacked_package = json.load(received_file)
 
-        encrypted_session_key = unpacked_package["session_key_component"]["session_key"].encode()
+        encrypted_session_key = base64.b64decode(unpacked_package["session_key_component"]["session_key"])
         key_id_of_recipient_public_key = unpacked_package["session_key_component"]["key_id_of_recipient_public_key"]
         algorithm = unpacked_package["session_key_component"]["algorithm"]
+        encrypted_data = base64.b64decode(unpacked_package["encrypted_data"])
 
         private_key_ring = PrivateKeyRing.find_private_key_ring_by_id(key_id_of_recipient_public_key, self.email)
         session_key = private_key_ring.decrypt_session_key(encrypted_session_key)
-        print(session_key)
+        message = ""
+        if algorithm == "des":
+            message = decrypt_message(encrypted_data, session_key)
+        elif algorithm == "aes":
+            pass
+        print(message)
         pass

@@ -7,6 +7,7 @@ import datetime
 
 from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.sign_message.SignMessageDialog import SignMessageDialog
+from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 from utils.des3_utils.des3_utils import perform_encrypt, encrypt_message
 
 
@@ -105,7 +106,7 @@ class SendMessageDialog:
                     "key_id_of_recipient_public_key": key_id_recipient_public_key,
                     "algorithm": "des" if v.get() == "des" else "aes"
                 },
-                "encrypted_data": str(key_cipher_tuple[1])
+                "encrypted_data": base64.b64encode(key_cipher_tuple[1]).decode('utf-8')
             }
 
             # compress message if needed

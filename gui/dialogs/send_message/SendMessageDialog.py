@@ -6,6 +6,7 @@ import datetime
 
 from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.sign_message.SignMessageDialog import SignMessageDialog
+from utils.aes_utils import aes_encrypt, aes_decrypt
 from utils.des3_utils.des3_utils import perform_encrypt, encrypt_message
 
 
@@ -85,16 +86,14 @@ class SendMessageDialog:
                     "key_id_sender_public_key": key_id_sender_public_key,
                     "timestamp": timestamp_signature
                 }
-            pass
 
             # encrypt message with selected algorithm
             key_cipher_tuple = ()
             if v.get() == "aes":
-                # encrypt message using aes algorithm
-                pass
+                key_cipher_tuple = aes_encrypt(json.dumps(package))
+
             elif v.get() == "des":
                 key_cipher_tuple = encrypt_message(json.dumps(package))
-                pass
 
             encrypted_session_key = self.ring.encrypt_session_key(key_cipher_tuple[0])
             key_id_recipient_public_key = self.ring.key_id
@@ -118,6 +117,7 @@ class SendMessageDialog:
 
             with open(self.send_path, 'w', encoding='utf-8') as send_file:
                 json.dump(json.dumps(package_to_send), send_file, ensure_ascii=False, indent=4)
+
         pass
 
         commands_frame = tk.Frame(bottom_frame)

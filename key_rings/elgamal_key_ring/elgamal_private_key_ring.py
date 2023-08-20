@@ -76,6 +76,10 @@ class ElgamalPrivateKeyRing(PrivateKeyRing):
         return NotImplemented
         pass
 
+    def decrypt_session_key(self, encrypted_session_key):
+        return NotImplemented
+        pass
+
     def get_public_key_as_string(self):
         return self.public_key_elgamal.__str__()
         pass

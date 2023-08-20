@@ -1,3 +1,4 @@
+import base64
 import json
 import tkinter as tk
 from ctypes import Union
@@ -100,8 +101,9 @@ class SendMessageDialog:
             key_id_recipient_public_key = self.ring.key_id
             package_to_send = {
                 "session_key_component": {
-                    "session_key": str(encrypted_session_key),
-                    "key_id_of_recipient_public_key": key_id_recipient_public_key
+                    "session_key": base64.b64encode(encrypted_session_key).decode('utf-8'),
+                    "key_id_of_recipient_public_key": key_id_recipient_public_key,
+                    "algorithm": "des" if v.get() == "des" else "aes"
                 },
                 "encrypted_data": str(key_cipher_tuple[1])
             }
@@ -117,7 +119,7 @@ class SendMessageDialog:
                 pass
 
             with open(self.send_path, 'w', encoding='utf-8') as send_file:
-                json.dump(json.dumps(package_to_send), send_file, ensure_ascii=False, indent=4)
+                json.dump(package_to_send, send_file, ensure_ascii=False, indent=4)
         pass
 
         commands_frame = tk.Frame(bottom_frame)

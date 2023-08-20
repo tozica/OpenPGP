@@ -1,12 +1,12 @@
 import string
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from key_rings.base_key_ring.key_ring import KeyRing
 
 
 class PublicKeyRing(KeyRing, ABC):
     key_id: int
-    public_key: int
+    public_key: string
     owner_trust: int
     key_legitimacy: int
     signature: string
@@ -22,6 +22,10 @@ class PublicKeyRing(KeyRing, ABC):
         self.owner_trust = 1
         self.signature = ""
         self.signature_trust = 1
+
+    @abstractmethod
+    def encrypt_session_key(self, key):
+        pass
 
     @classmethod
     def insert_row(cls, email, key_ring):

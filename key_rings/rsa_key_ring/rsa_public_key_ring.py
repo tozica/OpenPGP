@@ -1,4 +1,6 @@
 import re
+
+import rsa
 import rsa as rs
 from rsa import PublicKey
 import json
@@ -54,6 +56,11 @@ class RSAPublicKeyRing(PublicKeyRing):
                                         metadata["algorithm"], metadata["key_size"], metadata["user_name"],
                                         metadata["key_id"], public_key_rsa)
         PublicKeyRing.insert_row(email, rsa_key_ring)
+        pass
+
+    def encrypt_session_key(self, session_key):
+        encrypted_session_key = rsa.encrypt(session_key, self.public_key_rsa)
+        return encrypted_session_key
         pass
 
     def get_public_key_as_string(self):

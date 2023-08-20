@@ -4,3 +4,4 @@ elgamal>=0.0.5
 ecdsa
 cryptography
 pycryptodomex
+pyDes

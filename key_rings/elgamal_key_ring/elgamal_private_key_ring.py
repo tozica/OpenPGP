@@ -68,7 +68,11 @@ class ElgamalPrivateKeyRing(PrivateKeyRing):
         pass
 
     @classmethod
-    def import_public_key(cls, path):
+    def import_public_key(cls, path, email):
+        return NotImplemented
+        pass
+
+    def sign_message(self, message):
         return NotImplemented
         pass
 

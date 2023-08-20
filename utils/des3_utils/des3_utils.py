@@ -66,6 +66,7 @@ def perform_encrypt(d, password):
 
 def perform_decrypt(encrypt_d, key):
     decrypted_plaintext_bytes = decrypt(encrypt_d, key)
+    
     return bytes_to_int(decrypted_plaintext_bytes)
 
 

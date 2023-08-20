@@ -1,5 +1,5 @@
 import rsa as rs
-from key_rings.enumerations import KEY
+from utils.enumerations import KEY
 
 
 def generate_keys(nbits):

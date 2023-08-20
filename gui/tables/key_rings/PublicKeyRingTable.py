@@ -1,8 +1,8 @@
-from tkinter import ttk
-
-from gui.dialogs.FilePicker import FilePicker
-from gui.dialogs.TextPreviewPopup import TextPreviewPopup
-from key_rings.key_ring import KeyRing
+from tkinter import ttk, BOTTOM
+from gui.dialogs.general.FolderPicker import FolderPicker
+from gui.dialogs.general.TextPreviewPopup import TextPreviewPopup
+from gui.dialogs.send_message.SendMessageDialog import SendMessageDialog
+from key_rings.base_key_ring.public_key_ring import PublicKeyRing
 
 
 class PublicKeyRingTable:
@@ -20,19 +20,19 @@ class PublicKeyRingTable:
         self.create_table()
 
     @staticmethod
-    def create_table_row_public_ring(key: KeyRing):
-        return [key.timestamp, key.key_id, key.get_public_key_as_string(), key.email, key.algorithm, key.user_name,
-                key.key_size]
+    def create_table_row_public_ring(key: PublicKeyRing):
+        return [key.timestamp, key.key_id, key.public_key, key.owner_trust, key.user_id, key.key_legitimacy,
+                key.signature, key.signature_trust]
 
     def create_table(self):
         table_frame = ttk.Frame(self.frame)
-        table_frame.grid(row=1, column=0)
+        table_frame.pack(side=BOTTOM)
 
         headline_label = ttk.Label(table_frame, text="Public keys ring")
         headline_label.grid(row=0, columnspan=10)
 
-        columns = ['Timestamp', 'Key ID', 'Public Key', 'User ID', 'Algorithm',
-                   'User Name', 'Key Size', 'Export Public', 'Delete']
+        columns = ['Timestamp', 'Key ID', 'Public Key', 'Owner Trust', 'User ID', 'Key Legitimacy',
+                   'Signature', 'Signature Trust', 'Actions']
 
         for col_idx, col_name in enumerate(columns):
             col_label = ttk.Label(table_frame, text=col_name, borderwidth=1, relief="solid", padding=5)
@@ -50,31 +50,33 @@ class PublicKeyRingTable:
                                     lambda event, arg=ring:
                                     TextPreviewPopup(self.root, ring.get_public_key_as_string(), "N"))
 
-            export_label = ttk.Label(table_frame, text='Export public', borderwidth=1, relief="solid")
-            export_label.grid(row=row_idx + 2, column=8, sticky="nsew")
-            export_label.bind("<Button-1>", lambda event, arg=ring: self.export_public_ring(ring))
-
-            delete_label = ttk.Label(table_frame, text='Delete', borderwidth=1, relief="solid")
-            delete_label.grid(row=row_idx + 2, column=10, sticky="nsew")
-            delete_label.bind("<Button-1>", lambda event, arg=ring: self.delete_from_table(ring))
+            actions_frame = ttk.Frame(table_frame)
+            actions_frame.grid(row=row_idx + 2, column=8, sticky="nsew")
+            send_message_button = ttk.Button(actions_frame, text="Send message",
+                                             command=lambda arg=ring: self.send_message(arg))
+            export_public_key_button = ttk.Button(actions_frame, text="Export Public",
+                                                  command=lambda arg=ring: self.export_public_ring(arg))
+            delete_key_ring_button = ttk.Button(actions_frame, text="Delete Key Ring",
+                                                command=lambda arg=ring: self.delete_from_table(arg))
+            send_message_button.grid(row=0, column=0)
+            export_public_key_button.grid(row=0, column=1)
+            delete_key_ring_button.grid(row=0, column=2)
 
         for row_idx in range(len(self.button_data) + 2):
             table_frame.grid_rowconfigure(row_idx, weight=1)
 
-    def clear_window(self):
-        for widget in self.frame.winfo_children():
-            widget.destroy()
-
     def render(self):
-        self.clear_window()
-        self.create_table()
+        self.parent.render()
 
     def delete_from_table(self, ring):
-        KeyRing.key_rings_by_user[self.email].remove(ring)
+        PublicKeyRing.delete_row(self.email, ring)
         self.render()
 
-    @staticmethod
-    def export_public_ring(ring: KeyRing):
-        file_picker = FilePicker()
-        ring.export_public_key(file_picker.directory)
+    def send_message(self, ring):
+        SendMessageDialog(self.root, self, self.email, ring)
+        pass
 
+    @staticmethod
+    def export_public_ring(ring: PublicKeyRing):
+        file_picker = FolderPicker()
+        ring.export_public_key(file_picker.directory)

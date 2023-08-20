@@ -1,8 +1,7 @@
-from tkinter import ttk
-
-from gui.dialogs.FilePicker import FilePicker
-from gui.dialogs.TextPreviewPopup import TextPreviewPopup
-from key_rings.key_ring import KeyRing
+from tkinter import ttk, BOTTOM
+from gui.dialogs.general.FolderPicker import FolderPicker
+from gui.dialogs.general.TextPreviewPopup import TextPreviewPopup
+from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
 
 class PrivateKeyRingTable:
@@ -20,19 +19,18 @@ class PrivateKeyRingTable:
         self.create_table()
 
     @staticmethod
-    def create_table_row_private_ring(key: KeyRing):
-        return [key.timestamp, key.key_id, key.get_public_key_as_string(), key.get_private_key_as_string(),
-                key.email, key.algorithm, key.user_name, key.key_size]
+    def create_table_row_private_ring(key: PrivateKeyRing):
+        return [key.timestamp, key.key_id, key.public_key, key.encrypted_private_key,
+                key.user_id]
 
     def create_table(self):
         table_frame = ttk.Frame(self.frame)
-        table_frame.grid(row=0, column=0)
+        table_frame.pack(side=BOTTOM)
 
         headline_label = ttk.Label(table_frame, text="Private keys ring")
         headline_label.grid(row=0, columnspan=10)
 
-        columns = ['Timestamp', 'Key ID', 'Public Key', 'Encrypted Private Key', 'User ID', 'Algorithm',
-                   'User Name', 'Key Size', 'Export private', 'Delete']
+        columns = ['Timestamp', 'Key ID', 'Public Key', 'Encrypted Private Key', 'User ID', 'Actions']
 
         for col_idx, col_name in enumerate(columns):
             col_label = ttk.Label(table_frame, text=col_name, borderwidth=1, relief="solid", padding=5)
@@ -55,31 +53,34 @@ class PrivateKeyRingTable:
                                     lambda event, arg=ring:
                                     TextPreviewPopup(self.root, ring.get_private_key_as_string(), "N"))
 
-            export_label = ttk.Label(table_frame, text='Export private', borderwidth=1, relief="solid")
-            export_label.grid(row=row_idx + 2, column=8, sticky="nsew")
-            export_label.bind("<Button-1>", lambda event, arg=ring: self.export_private_ring(ring))
-
-            delete_label = ttk.Label(table_frame, text='Delete', borderwidth=1, relief="solid")
-            delete_label.grid(row=row_idx + 2, column=10, sticky="nsew")
-            delete_label.bind("<Button-1>", lambda event, arg=ring: self.delete_from_table(ring))
+            actions_frame = ttk.Frame(table_frame)
+            actions_frame.grid(row=row_idx + 2, column=5, sticky="nsew")
+            export_private_key_button = ttk.Button(actions_frame, text="Export Private Key",
+                                                   command=lambda arg=ring: self.export_private_ring(arg))
+            export_public_key_button = ttk.Button(actions_frame, text="Export Public Key",
+                                                  command=lambda arg=ring: self.export_public_ring(arg))
+            delete_key_ring_button = ttk.Button(actions_frame, text="Delete Key Ring",
+                                                command=lambda arg=ring: self.delete_from_table(arg))
+            export_private_key_button.grid(row=0, column=0)
+            export_public_key_button.grid(row=0, column=1)
+            delete_key_ring_button.grid(row=0, column=2)
 
         for row_idx in range(len(self.button_data) + 2):
             table_frame.grid_rowconfigure(row_idx, weight=1)
 
-    def clear_window(self):
-        for widget in self.frame.winfo_children():
-            widget.destroy()
-
     def render(self):
-        self.clear_window()
-        self.create_table()
+        self.parent.render()
 
     def delete_from_table(self, ring):
-        KeyRing.key_rings_by_user[self.email].remove(ring)
+        PrivateKeyRing.delete_row(self.email, ring)
         self.render()
 
     @staticmethod
-    def export_private_ring(ring: KeyRing):
-        file_picker = FilePicker()
+    def export_private_ring(ring: PrivateKeyRing):
+        file_picker = FolderPicker()
         ring.export_private_key(file_picker.directory)
 
+    @staticmethod
+    def export_public_ring(ring: PrivateKeyRing):
+        file_picker = FolderPicker()
+        ring.export_public_key(file_picker.directory)

@@ -2,10 +2,10 @@ import tkinter as tk
 from datetime import date
 from tkinter import ttk
 
+from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
+from key_rings.elgamal_key_ring.elgamal_private_key_ring import ElgamalPrivateKeyRing
+from key_rings.rsa_key_ring.rsa_private_key_ring import RSAPrivateKeyRing
 from utils.des3_utils.des3_utils import perform_encrypt
-from key_rings.elgamal_key_ring.elgamal_key_ring import ElgamalKeyRing
-from key_rings.key_ring import KeyRing
-from key_rings.rsa_key_ring.rsa_key_ring import RSAKeyRing
 from utils.rsa_util import rsa_util
 from elgamal.elgamal import Elgamal
 
@@ -61,29 +61,24 @@ class GenerateKeyForm:
             if selected_algorithm == "RSA":
                 (public_rsa, private_rsa) = rsa_util.generate_keys(int(key_size))
 
-                key, encrypt_d, salt = perform_encrypt(private_rsa.d, password)
+                key_from_password, encrypted_private_key, salt = perform_encrypt(private_rsa.d, password)
 
-                mask = (1 << 64) - 1
+                rsa_key_ring = RSAPrivateKeyRing(date.today(), email, email, "RSA",
+                                                 int(key_size), name, encrypted_private_key, key_from_password,
+                                                 private_rsa, public_rsa)
 
-                rsa_key_ring = RSAKeyRing(date.today(), public_rsa.e & mask, public_rsa.e, email, email, "RSA",
-                                          int(key_size), name, private_rsa, public_rsa)
-
-                if email in KeyRing.key_rings_by_user:
-                    KeyRing.key_rings_by_user[email].append(rsa_key_ring)
-                else:
-                    KeyRing.key_rings_by_user[email] = [rsa_key_ring]
+                PrivateKeyRing.insert_row(email, rsa_key_ring)
 
             elif selected_algorithm == "Elgamal & DSA":
                 (public_elgamal, private_elgamal) = Elgamal.newkeys(int(key_size))
 
-                mask = (1 << 64) - 1
-                elgamal_key_ring = ElgamalKeyRing(date.today(), public_elgamal.y & mask, public_elgamal.y, email, email,
-                                                  "Elgamal & DSA", int(key_size), name, private_elgamal, public_elgamal)
+                key_from_password, encrypted_private_key, salt = perform_encrypt(private_elgamal.x, password)
 
-                if email in KeyRing.key_rings_by_user:
-                    KeyRing.key_rings_by_user[email].append(elgamal_key_ring)
-                else:
-                    KeyRing.key_rings_by_user[email] = [elgamal_key_ring]
+                elgamal_key_ring = ElgamalPrivateKeyRing(date.today(), email, email, "Elgamal & DSA", int(key_size),
+                                                         name, encrypted_private_key, key_from_password,
+                                                         private_elgamal, public_elgamal)
+
+                PrivateKeyRing.insert_row(email, elgamal_key_ring)
 
             new_form.destroy()
             parent.render()

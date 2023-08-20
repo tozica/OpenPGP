@@ -2,16 +2,14 @@ import tkinter.constants
 from tkinter import ttk
 
 from gui.dialogs.GenerateKeyForm import GenerateKeyForm
-from gui.tables.PrivateKeyRingTable import PrivateKeyRingTable
-from gui.tables.PublicKeyRingTable import PublicKeyRingTable
-from gui.tables.UserListTable import UserListTable
+from gui.tables.user.UserListTable import UserListTable
 
 
 class HomeScreen:
     def __init__(self, root):
         self.root = root
         self.root.title("OpenPGP")
-        self.buttons = ["Generate keys", "Import key", "Send message", "Receive message"]
+        self.buttons = ["Generate keys"]
         self.render()
 
     def on_click(self, name):

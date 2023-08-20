@@ -1,7 +1,10 @@
 import json
 import tkinter as tk
+from ctypes import Union
 from tkinter import ttk, TOP, RIGHT, BOTTOM, LEFT
 import datetime
+
+from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.sign_message.SignMessageDialog import SignMessageDialog
 from utils.des3_utils.des3_utils import perform_encrypt, encrypt_message
 
@@ -30,15 +33,24 @@ class SendMessageDialog:
 
         options_frame = tk.Frame(self.dialog_frame)
         options_frame.pack(side=TOP)
+        compress_convert_frame = tk.Frame(options_frame)
+        compress_convert_frame.pack(side=RIGHT)
+        aes_des_frame = tk.Frame(options_frame)
+        aes_des_frame.pack(side=RIGHT)
 
         sign_message_button = tk.Button(options_frame, text="Sign Message", command=self.sign_message)
         sign_message_button.pack(side=LEFT)
         compress_enabled = tk.IntVar()
-        compress_check_box = tk.Checkbutton(options_frame, text="Compress Message", variable=compress_enabled)
+        compress_check_box = tk.Checkbutton(compress_convert_frame, text="Compress Message", variable=compress_enabled)
         convert_enabled = tk.IntVar()
-        convert_check_box = tk.Checkbutton(options_frame, text="Convert to radix-64", variable=convert_enabled)
-        compress_check_box.pack(side=RIGHT)
-        convert_check_box.pack(side=RIGHT)
+        convert_check_box = tk.Checkbutton(compress_convert_frame, text="Convert to radix-64", variable=convert_enabled)
+        compress_check_box.pack(side=TOP)
+        convert_check_box.pack(side=BOTTOM)
+        v = tk.StringVar(value="aes")
+        aes_radio_button = tk.Radiobutton(aes_des_frame, text="AES", variable=v, value="aes")
+        des_radio_button = tk.Radiobutton(aes_des_frame, text="DES", variable=v, value="des")
+        aes_radio_button.pack(side=TOP)
+        des_radio_button.pack(side=BOTTOM)
 
         bottom_frame = tk.Frame(self.dialog_frame)
         bottom_frame.pack(side=BOTTOM)
@@ -52,6 +64,8 @@ class SendMessageDialog:
 
         def send_message():
             package = {}
+            folder_picker = FolderPicker()
+            self.send_path = folder_picker.directory + '/' + self.ring.email + '.txt'
             message = text_area.get(1.0, "end-1c")
             timestamp = str(datetime.datetime.now())
             filename = self.send_path
@@ -60,6 +74,8 @@ class SendMessageDialog:
                 "timestamp": timestamp,
                 "filename": filename
             }
+
+            # sign message if needed
             if self.private_key_for_sign is not None:
                 signature = self.private_key_for_sign.sign_message(message)
                 key_id_sender_public_key = self.private_key_for_sign.key_id
@@ -70,16 +86,38 @@ class SendMessageDialog:
                     "timestamp": timestamp_signature
                 }
             pass
-            key, encrypted_message = encrypt_message(json.dumps(package))
-            encrypted_session_key = self.ring.encrypt_session_key(key)
+
+            # encrypt message with selected algorithm
+            key_cipher_tuple = ()
+            if v.get() == "aes":
+                # encrypt message using aes algorithm
+                pass
+            elif v.get() == "des":
+                key_cipher_tuple = encrypt_message(json.dumps(package))
+                pass
+
+            # compress message if needed
+            if compress_enabled.get() == 1:
+                # compress message (zip)
+                pass
+
+            # convert message if needed
+            if convert_enabled.get() == 1:
+                # convert message (radix-64)
+                pass
+
+            encrypted_session_key = self.ring.encrypt_session_key(key_cipher_tuple[0])
             key_id_recipient_public_key = self.ring.key_id
             package_to_send = {
                 "session_key_component": {
-                    "session_key": encrypted_session_key,
+                    "session_key": str(encrypted_session_key),
                     "key_id_of_recipient_public_key": key_id_recipient_public_key
                 },
-                "encrypted_data": encrypted_message
+                "encrypted_data": str(key_cipher_tuple[1])
             }
+
+            with open(self.send_path, 'w', encoding='utf-8') as send_file:
+                json.dump(json.dumps(package_to_send), send_file, ensure_ascii=False, indent=4)
         pass
 
         commands_frame = tk.Frame(bottom_frame)

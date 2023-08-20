@@ -45,6 +45,10 @@ class PrivateKeyRing(KeyRing, ABC):
     def sign_message(self, message):
         pass
 
+    @abstractmethod
+    def decrypt_session_key(self, encrypted_session_key):
+        pass
+
     @classmethod
     def insert_row(cls, email, key_ring):
         if email in PrivateKeyRing.private_key_ring_by_user:
@@ -65,3 +69,13 @@ class PrivateKeyRing(KeyRing, ABC):
     def delete_user(cls, email):
         if email in PrivateKeyRing.private_key_ring_by_user:
             del PrivateKeyRing.private_key_ring_by_user[email]
+
+    @classmethod
+    def find_private_key_ring_by_id(cls, key_id, email):
+        private_key_ring = PrivateKeyRing.private_key_ring_by_user[email]
+        for key_ring in private_key_ring:
+            if key_ring.key_id == key_id:
+                return key_ring
+
+        return None
+        pass

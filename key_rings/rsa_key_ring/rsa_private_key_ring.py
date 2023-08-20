@@ -103,6 +103,11 @@ class RSAPrivateKeyRing(PrivateKeyRing):
         return signature
         pass
 
+    def decrypt_session_key(self, encrypted_session_key):
+        session_key = rsa.decrypt(encrypted_session_key, self.private_key_rsa)
+        return session_key
+        pass
+
     def get_public_key_as_string(self):
         return self.public_key_rsa.__repr__()
         pass

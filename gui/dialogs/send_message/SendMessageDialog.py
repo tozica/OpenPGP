@@ -1,15 +1,13 @@
 import base64
 import json
 import tkinter as tk
-from ctypes import Union
 from tkinter import ttk, TOP, RIGHT, BOTTOM, LEFT
 import datetime
 
 from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.sign_message.SignMessageDialog import SignMessageDialog
-from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
-from utils.aes_utils import aes_encrypt, aes_decrypt
-from utils.des3_utils.des3_utils import perform_encrypt, encrypt_message
+from utils.aes_utils import aes_encrypt
+from utils.des3_utils.des3_utils import encrypt_message
 
 
 class SendMessageDialog:
@@ -84,7 +82,7 @@ class SendMessageDialog:
                 key_id_sender_public_key = self.private_key_for_sign.key_id
                 timestamp_signature = str(datetime.datetime.now())
                 package["signature"] = {
-                    "message_digest": str(signature),
+                    "message_digest": base64.b64encode(signature).decode('utf-8'),
                     "key_id_sender_public_key": key_id_sender_public_key,
                     "timestamp": timestamp_signature
                 }
@@ -93,7 +91,6 @@ class SendMessageDialog:
             key_cipher_tuple = ()
             if v.get() == "aes":
                 key_cipher_tuple = aes_encrypt(json.dumps(package))
-
             elif v.get() == "des":
                 key_cipher_tuple = encrypt_message(json.dumps(package))
 

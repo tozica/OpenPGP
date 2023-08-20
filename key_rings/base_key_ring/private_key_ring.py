@@ -41,6 +41,10 @@ class PrivateKeyRing(KeyRing, ABC):
     def get_private_key_as_string(self):
         pass
 
+    @abstractmethod
+    def sign_message(self, message):
+        pass
+
     @classmethod
     def insert_row(cls, email, key_ring):
         if email in PrivateKeyRing.private_key_ring_by_user:

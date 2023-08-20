@@ -16,8 +16,12 @@ class ElgamalPublicKeyRing(PublicKeyRing):
         return NotImplemented
         pass
 
+    def encrypt_session_key(self, session_key):
+        return NotImplemented
+        pass
+
     @classmethod
-    def import_public_key(cls, path):
+    def import_public_key(cls, path, email):
         return NotImplemented
         pass
 

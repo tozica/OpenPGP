@@ -1,5 +1,7 @@
 import re
+import string
 
+import rsa
 import rsa as rs
 from rsa import PrivateKey, PublicKey
 import json
@@ -94,6 +96,11 @@ class RSAPrivateKeyRing(PrivateKeyRing):
             metadata = json.load(metadata_file)
 
         # still not done
+        pass
+
+    def sign_message(self, message: string):
+        signature = rsa.sign(message.encode(), self.private_key_rsa, 'SHA-1')
+        return signature
         pass
 
     def get_public_key_as_string(self):

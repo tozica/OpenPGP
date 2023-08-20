@@ -1,6 +1,8 @@
 from Cryptodome.Cipher import DES3
 import hashlib
 from Cryptodome.Random import get_random_bytes
+from pyDes import *
+from random import *
 
 
 def pad_plaintext(plaintext, block_size):
@@ -66,3 +68,17 @@ def perform_decrypt(encrypt_d, key):
     decrypted_plaintext_bytes = decrypt(encrypt_d, key)
     return bytes_to_int(decrypted_plaintext_bytes)
 
+
+def encrypt_message(message):
+    key = randbytes(8)
+    k = des(key, CBC, "\0\0\0\0\0\0\0\0", pad=None, padmode=PAD_PKCS5)
+    cipher = k.encrypt(message)
+    return key, cipher
+    pass
+
+
+def decrypt_message(cipher, key):
+    k = des(key, CBC, "\0\0\0\0\0\0\0\0", pad=None, padmode=PAD_PKCS5)
+    message = k.decrypt(cipher, pad=None, padmode=PAD_PKCS5)
+    return message
+    pass

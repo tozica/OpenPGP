@@ -1,9 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, TOP, BOTTOM, scrolledtext
 
+from key_rings.base_key_ring.public_key_ring import PublicKeyRing
+
 
 class ReceiveMessageDialog:
-    def __init__(self, root, parent, message, sender_email, receiver_email):
+    def __init__(self, root, parent, message_and_signature, receiver_email):
         self.root = root
         self.parent = parent
         self.receive_message_dialog = tk.Toplevel(self.root)
@@ -11,11 +13,15 @@ class ReceiveMessageDialog:
         self.dialog_frame = ttk.Frame(self.receive_message_dialog)
         self.dialog_frame.pack(fill="both", expand=True)
 
-        self.timestamp = message["timestamp"]
-        self.data = message["data"]
-        self.file_name = message["filename"]
-        self.sender_email = sender_email
+        self.timestamp = message_and_signature["message"]["timestamp"]
+        self.data = message_and_signature["message"]["data"]
+        self.file_name = message_and_signature["message"]["filename"]
+        test = message_and_signature["signature"]["key_id_sender_public_key"]
+        public_sender_key = PublicKeyRing.find_key_by_id(message_and_signature["signature"]["key_id_sender_public_key"])
+        self.sender_email = public_sender_key.email if public_sender_key is not None else None
         self.receiver_email = receiver_email
+
+        self.create_dialog()
 
     def create_dialog(self):
         style = ttk.Style()
@@ -29,6 +35,7 @@ class ReceiveMessageDialog:
         ttk.Label(information_frame, text="Sender's email: " + self.sender_email).grid(row=1, column=0, sticky="w")
         ttk.Label(information_frame, text="Receiver's email: " + self.receiver_email).grid(row=2, column=0, sticky="w")
         ttk.Label(information_frame, text="Received from inbox: " + self.file_name).grid(row=3, column=0, sticky="w")
+        ttk.Label(information_frame, text="Message is signed: " + "YES" if self.sender_email is not None else "NO").grid(row=3, column=0, sticky="w")
 
         data_frame = ttk.Frame(self.dialog_frame)
         data_frame.pack(side=BOTTOM)

@@ -79,3 +79,12 @@ class PrivateKeyRing(KeyRing, ABC):
 
         return None
         pass
+
+    @classmethod
+    def find_key_by_id(cls, key_id):
+        for (user, key_rings) in PrivateKeyRing.private_key_ring_by_user:
+            for key_ring in key_rings:
+                if key_ring.key_id == key_id:
+                    return key_ring
+        return None
+        pass

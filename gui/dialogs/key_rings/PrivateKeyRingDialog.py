@@ -5,6 +5,7 @@ from tkinter import ttk
 from tkinter.constants import TOP, RIGHT
 
 from gui.dialogs.general.FilePicker import FilePicker
+from gui.dialogs.receive_message.ReceiveMessageDialog import ReceiveMessageDialog
 from gui.tables.key_rings.PrivateKeyRingTable import PrivateKeyRingTable
 from gui.tables.user.UserDetailsTable import UserDetailsTable
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
@@ -84,4 +85,5 @@ class PrivateKeyRingDialog:
 
         # show message
         print(message_and_signature["message"]["data"])
+        ReceiveMessageDialog(self.root, self, message_and_signature, self.email)
         pass

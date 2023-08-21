@@ -25,7 +25,7 @@ class KeyRing(ABC):
 
     @classmethod
     @abstractmethod
-    def import_public_key(cls, path, email):
+    def import_public_key(cls, path, metadata, email):
         pass
 
     @abstractmethod

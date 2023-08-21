@@ -1,10 +1,14 @@
+import json
+import re
 import tkinter as tk
+from os import path
 from tkinter import ttk, TOP, RIGHT
 
 from gui.dialogs.general.FilePicker import FilePicker
 from gui.tables.key_rings.PublicKeyRingTable import PublicKeyRingTable
 from gui.tables.user.UserDetailsTable import UserDetailsTable
 from key_rings.base_key_ring.public_key_ring import PublicKeyRing
+from key_rings.elgamal_key_ring.elgamal_public_key_ring import ElgamalPublicKeyRing
 from key_rings.rsa_key_ring.rsa_public_key_ring import RSAPublicKeyRing
 
 
@@ -13,7 +17,8 @@ class PublicKeyRingDialog:
         self.root = root
         self.parent = parent
         self.email = email
-        self.key_rings = PublicKeyRing.public_key_ring_by_user[email] if email in PublicKeyRing.public_key_ring_by_user else []
+        self.key_rings = PublicKeyRing.public_key_ring_by_user[
+            email] if email in PublicKeyRing.public_key_ring_by_user else []
         self.dialog_private_key_table = tk.Toplevel(self.root)
         self.dialog_private_key_table.title("Public key ring for " + self.email)
         self.dialog_frame = ttk.Frame(self.dialog_private_key_table)
@@ -52,6 +57,20 @@ class PublicKeyRingDialog:
 
     def import_public_ring(self, email):
         file_picker = FilePicker()
-        RSAPublicKeyRing.import_public_key(file_picker.filename, email)
+
+        metadata = self.get_methadata(file_picker.filename)
+
+        if metadata["algorithm"] == "RSA":
+            RSAPublicKeyRing.import_public_key(file_picker.filename, metadata, email)
+        elif metadata["algorithm"] == "Elgamal & DSA":
+            ElgamalPublicKeyRing.import_public_key(file_picker.filename, metadata, email)
+
         self.render()
-    pass
+
+    def get_methadata(self, path):
+        file_name = path.split("/")[len(path.split("/")) - 1]
+        metadata_file_path = re.sub(file_name, ".metadata", path)
+        with open(metadata_file_path, mode='r') as metadata_file:
+            metadata = json.load(metadata_file)
+
+        return metadata

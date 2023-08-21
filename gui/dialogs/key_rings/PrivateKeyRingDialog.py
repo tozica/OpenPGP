@@ -5,9 +5,12 @@ from tkinter import ttk
 from tkinter.constants import TOP, RIGHT
 
 from gui.dialogs.general.FilePicker import FilePicker
+from gui.dialogs.receive_message.ReceiveMessageDialog import ReceiveMessageDialog
 from gui.tables.key_rings.PrivateKeyRingTable import PrivateKeyRingTable
 from gui.tables.user.UserDetailsTable import UserDetailsTable
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
+from key_rings.base_key_ring.public_key_ring import PublicKeyRing
+from utils.aes_utils.aes_utils import aes_decrypt
 from utils.des3_utils.des3_utils import decrypt_message
 
 
@@ -69,10 +72,23 @@ class PrivateKeyRingDialog:
 
         private_key_ring = PrivateKeyRing.find_private_key_ring_by_id(key_id_of_recipient_public_key, self.email)
         session_key = private_key_ring.decrypt_session_key(encrypted_session_key)
-        message = ""
+        message_and_signature = None
+
         if algorithm == "des":
-            message = decrypt_message(encrypted_data, session_key)
+            message_and_signature = json.loads(decrypt_message(encrypted_data, session_key).decode())
         elif algorithm == "aes":
+            message_and_signature = json.loads(aes_decrypt(encrypted_data, session_key).decode())
             pass
-        print(message)
+
+        # verify signature if needed
+        if message_and_signature["signature"] is not None:
+            public_sender_key = PublicKeyRing.find_key_by_id(
+                message_and_signature["signature"]["key_id_sender_public_key"])
+            public_sender_key.verify_sign(base64.b64decode(message_and_signature["message"]["data"]),
+                                          base64.b64decode(message_and_signature["signature"]["message_digest"]))
+            pass
+
+        # show message
+        print(message_and_signature["message"]["data"])
+        ReceiveMessageDialog(self.root, self, message_and_signature, self.email)
         pass

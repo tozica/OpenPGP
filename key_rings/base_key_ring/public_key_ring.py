@@ -27,6 +27,10 @@ class PublicKeyRing(KeyRing, ABC):
     def encrypt_session_key(self, key):
         pass
 
+    @abstractmethod
+    def verify_sign(self, message, message_digest):
+        pass
+
     @classmethod
     def insert_row(cls, email, key_ring):
         if email in PublicKeyRing.public_key_ring_by_user:
@@ -47,3 +51,12 @@ class PublicKeyRing(KeyRing, ABC):
     def delete_user(cls, email):
         if email in PublicKeyRing.public_key_ring_by_user:
             del PublicKeyRing.public_key_ring_by_user[email]
+
+    @classmethod
+    def find_key_by_id(cls, key_id):
+        for row, (user, key_rings) in enumerate(PublicKeyRing.public_key_ring_by_user.items()):
+            for col, key_ring in enumerate(key_rings):
+                if key_ring.key_id == key_id:
+                    return key_ring
+        return None
+        pass

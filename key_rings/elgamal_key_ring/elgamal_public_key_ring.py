@@ -51,6 +51,10 @@ class ElgamalPublicKeyRing(PublicKeyRing):
 
         PublicKeyRing.insert_row(email, elgamal_key_ring)
 
+    def verify_sign(self, message, message_digest):
+        return NotImplemented
+        pass
+
     def get_public_key_as_string(self):
         return self.public_key_elgamal.__str__()
 

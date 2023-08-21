@@ -6,7 +6,7 @@ import datetime
 
 from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.sign_message.SignMessageDialog import SignMessageDialog
-from utils.aes_utils import aes_encrypt
+from utils.aes_utils.aes_utils import aes_encrypt
 from utils.des3_utils.des3_utils import encrypt_message
 
 

@@ -27,6 +27,10 @@ class PublicKeyRing(KeyRing, ABC):
     def encrypt_session_key(self, key):
         pass
 
+    @abstractmethod
+    def verify_sign(self, message, message_digest):
+        pass
+
     @classmethod
     def insert_row(cls, email, key_ring):
         if email in PublicKeyRing.public_key_ring_by_user:

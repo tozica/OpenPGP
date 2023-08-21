@@ -16,7 +16,6 @@ class ReceiveMessageDialog:
         self.timestamp = message_and_signature["message"]["timestamp"]
         self.data = message_and_signature["message"]["data"]
         self.file_name = message_and_signature["message"]["filename"]
-        test = message_and_signature["signature"]["key_id_sender_public_key"]
         public_sender_key = PublicKeyRing.find_key_by_id(message_and_signature["signature"]["key_id_sender_public_key"])
         self.sender_email = public_sender_key.email if public_sender_key is not None else None
         self.receiver_email = receiver_email

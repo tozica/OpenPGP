@@ -82,8 +82,8 @@ class PrivateKeyRing(KeyRing, ABC):
 
     @classmethod
     def find_key_by_id(cls, key_id):
-        for (user, key_rings) in PrivateKeyRing.private_key_ring_by_user:
-            for key_ring in key_rings:
+        for row, (user, key_rings) in enumerate(PrivateKeyRing.private_key_ring_by_user.items()):
+            for col, key_ring in enumerate(key_rings):
                 if key_ring.key_id == key_id:
                     return key_ring
         return None

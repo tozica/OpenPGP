@@ -9,7 +9,8 @@ from gui.dialogs.receive_message.ReceiveMessageDialog import ReceiveMessageDialo
 from gui.tables.key_rings.PrivateKeyRingTable import PrivateKeyRingTable
 from gui.tables.user.UserDetailsTable import UserDetailsTable
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
-from utils.aes_utils import aes_decrypt
+from key_rings.base_key_ring.public_key_ring import PublicKeyRing
+from utils.aes_utils.aes_utils import aes_decrypt
 from utils.des3_utils.des3_utils import decrypt_message
 
 
@@ -81,6 +82,10 @@ class PrivateKeyRingDialog:
 
         # verify signature if needed
         if message_and_signature["signature"] is not None:
+            public_sender_key = PublicKeyRing.find_key_by_id(
+                message_and_signature["signature"]["key_id_sender_public_key"])
+            public_sender_key.verify_sign(base64.b64decode(message_and_signature["message"]["data"]),
+                                          base64.b64decode(message_and_signature["signature"]["message_digest"]))
             pass
 
         # show message

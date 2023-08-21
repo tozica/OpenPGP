@@ -63,6 +63,11 @@ class RSAPublicKeyRing(PublicKeyRing):
         return encrypted_session_key
         pass
 
+    def verify_sign(self, message, message_digest):
+        hash_name = rsa.verify(message, message_digest, self.public_key_rsa)
+        return hash_name
+        pass
+
     def get_public_key_as_string(self):
         return self.public_key_rsa.__repr__()
         pass

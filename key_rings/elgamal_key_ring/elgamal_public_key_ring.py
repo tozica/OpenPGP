@@ -25,6 +25,10 @@ class ElgamalPublicKeyRing(PublicKeyRing):
         return NotImplemented
         pass
 
+    def verify_sign(self, message, message_digest):
+        return NotImplemented
+        pass
+
     def get_public_key_as_string(self):
         return self.public_key_elgamal.__str__()
         pass

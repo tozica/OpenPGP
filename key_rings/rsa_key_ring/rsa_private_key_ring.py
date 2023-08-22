@@ -98,7 +98,7 @@ class RSAPrivateKeyRing(PrivateKeyRing):
         pass
 
     def sign_message(self, message: string):
-        signature = rsa.sign(message.encode(), self.private_key_rsa, 'SHA-1')
+        signature = rsa.sign(message, self.private_key_rsa, 'SHA-1')
         return signature
         pass
 

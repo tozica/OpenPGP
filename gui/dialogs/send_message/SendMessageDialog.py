@@ -78,7 +78,7 @@ class SendMessageDialog:
 
             # sign message if needed
             if self.private_key_for_sign is not None:
-                signature = self.private_key_for_sign.sign_message(message)
+                signature = self.private_key_for_sign.sign_message(base64.b64encode(message.encode()))
                 key_id_sender_public_key = self.private_key_for_sign.key_id
                 timestamp_signature = str(datetime.datetime.now())
                 package["signature"] = {

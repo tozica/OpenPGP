@@ -84,7 +84,7 @@ class PrivateKeyRingDialog:
         if message_and_signature["signature"] is not None:
             public_sender_key = PublicKeyRing.find_key_by_id(
                 message_and_signature["signature"]["key_id_sender_public_key"])
-            public_sender_key.verify_sign(base64.b64decode(message_and_signature["message"]["data"]),
+            public_sender_key.verify_sign(base64.b64encode(message_and_signature["message"]["data"].encode()),
                                           base64.b64decode(message_and_signature["signature"]["message_digest"]))
             pass
 

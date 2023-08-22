@@ -70,7 +70,7 @@ class PrivateKeyRingDialog:
         algorithm = unpacked_package["session_key_component"]["algorithm"]
         encrypted_data = base64.b64decode(unpacked_package["encrypted_data"])
 
-        private_key_ring = PrivateKeyRing.find_private_key_ring_by_id(key_id_of_recipient_public_key, self.email)
+        private_key_ring = PrivateKeyRing.find_key_by_id(key_id_of_recipient_public_key)
         session_key = private_key_ring.decrypt_session_key(encrypted_session_key)
         message_and_signature = None
 
@@ -81,7 +81,7 @@ class PrivateKeyRingDialog:
             pass
 
         # verify signature if needed
-        if message_and_signature["signature"] is not None:
+        if message_and_signature.get("signature", None) is not None:
             public_sender_key = PublicKeyRing.find_key_by_id(
                 message_and_signature["signature"]["key_id_sender_public_key"])
             public_sender_key.verify_sign(base64.b64decode(message_and_signature["message"]["data"]),
@@ -90,5 +90,6 @@ class PrivateKeyRingDialog:
 
         # show message
         print(message_and_signature["message"]["data"])
+
         ReceiveMessageDialog(self.root, self, message_and_signature, self.email)
         pass

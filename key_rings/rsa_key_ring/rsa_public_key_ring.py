@@ -39,7 +39,7 @@ class RSAPublicKeyRing(PublicKeyRing):
         pass
 
     @classmethod
-    def import_public_key(cls, path, email):
+    def import_public_key(cls, path, metadata, email):
         pem_file_path = path
         file_name = path.split("/")[len(path.split("/")) - 1]
         metadata_file_path = re.sub(file_name, ".metadata", path)

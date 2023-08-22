@@ -1,6 +1,8 @@
 import json
 import re
 
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.dsa import DSAPublicKey
 from cryptography.utils import int_to_bytes
 from elgamal.elgamal import Elgamal, CipherText
 from elgamal.elgamal import PublicKey
@@ -12,12 +14,14 @@ from utils.des3_utils.des3_utils import bytes_to_int
 
 class ElgamalPublicKeyRing(PublicKeyRing):
     public_key_elgamal: PublicKey
+    public_key_dsa: DSAPublicKey
 
     def __init__(self, timestamp, user_id, email, algorithm, key_size, user_name, key_id,
-                 public_key_elgamal) -> None:
+                 public_key_elgamal, dsa_public) -> None:
         super().__init__(timestamp, user_id, email, algorithm, key_size, user_name, key_id)
         self.public_key_elgamal = public_key_elgamal
         self.public_key = self.get_public_key_as_string()
+        self.public_key_dsa = dsa_public
 
     def export_public_key(self, path):
         pass
@@ -42,12 +46,14 @@ class ElgamalPublicKeyRing(PublicKeyRing):
 
         p = pem[:256]
         y = pem[256:512]
+        dsa = pem[512:]
 
         elgamal_public = PublicKey(bytes_to_int(p), Elgamal.get_g(bytes_to_int(p)), bytes_to_int(y))
+        dsa_public = serialization.load_pem_public_key(dsa)
 
         elgamal_key_ring = ElgamalPublicKeyRing(metadata["timestamp"], metadata["user_id"], metadata["email"],
                                                 metadata["algorithm"], metadata["key_size"], metadata["user_name"],
-                                                metadata["key_id"], elgamal_public)
+                                                metadata["key_id"], elgamal_public, dsa_public)
 
         PublicKeyRing.insert_row(email, elgamal_key_ring)
 

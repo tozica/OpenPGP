@@ -2,6 +2,9 @@ import tkinter as tk
 from datetime import date
 from tkinter import ttk
 
+from cryptography.hazmat.primitives.asymmetric import dsa
+from cryptography.hazmat.primitives.asymmetric.dsa import DSAPrivateKey
+
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 from key_rings.elgamal_key_ring.elgamal_private_key_ring import ElgamalPrivateKeyRing
 from key_rings.rsa_key_ring.rsa_private_key_ring import RSAPrivateKeyRing
@@ -72,11 +75,13 @@ class GenerateKeyForm:
             elif selected_algorithm == "Elgamal & DSA":
                 (public_elgamal, private_elgamal) = Elgamal.newkeys(int(key_size))
 
+                private_key_dsa: DSAPrivateKey = dsa.generate_private_key(key_size=1024)
+
                 key_from_password, encrypted_private_key, salt = perform_encrypt(private_elgamal.x, password)
 
                 elgamal_key_ring = ElgamalPrivateKeyRing(date.today(), email, email, "Elgamal & DSA", int(key_size),
                                                          name, encrypted_private_key, key_from_password,
-                                                         private_elgamal, public_elgamal)
+                                                         private_elgamal, public_elgamal, private_key_dsa)
 
                 PrivateKeyRing.insert_row(email, elgamal_key_ring)
 

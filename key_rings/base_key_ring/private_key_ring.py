@@ -87,4 +87,3 @@ class PrivateKeyRing(KeyRing, ABC):
                 if key_ring.key_id == key_id:
                     return key_ring
         return None
-        pass

@@ -1,6 +1,8 @@
 import json
 import re
 
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.dsa import DSAPrivateKey, DSAPublicKey
 from cryptography.utils import int_to_bytes
 from elgamal.elgamal import PrivateKey, PublicKey, Elgamal, CipherText
 from rsa.pem import save_pem
@@ -11,14 +13,18 @@ from utils.des3_utils.des3_utils import bytes_to_int
 class ElgamalPrivateKeyRing(PrivateKeyRing):
     private_key_elgamal: PrivateKey
     public_key_elgamal: PublicKey
+    private_key_dsa: DSAPrivateKey
+    public_key_dsa: DSAPublicKey
 
     def __init__(self, timestamp, user_id, email, algorithm, key_size, user_name, encrypted_private_key,
-                 key_from_password, private_key_elgamal, public_key_elgamal) -> None:
+                 key_from_password, private_key_elgamal, public_key_elgamal, private_dsa_key) -> None:
         super().__init__(timestamp, user_id, email, algorithm, key_size, user_name, encrypted_private_key,
                          key_from_password)
         self.private_key_elgamal = private_key_elgamal
         self.public_key_elgamal = public_key_elgamal
         self.public_key = self.get_public_key_as_string()
+        self.private_key_dsa = private_dsa_key
+        self.public_key_dsa = private_dsa_key.public_key()
 
     def export_public_key(self, path):
         pem_file_path = path + '/' + self.user_name + '_public.pem'
@@ -39,7 +45,10 @@ class ElgamalPrivateKeyRing(PrivateKeyRing):
         p = int_to_bytes(self.public_key_elgamal.p, 256)
         y = int_to_bytes(self.public_key_elgamal.y, 256)
 
-        content = save_pem(p + y, "ELGAMAL PUBLIC KEY")
+        dsa_bytes = self.public_key_dsa.public_bytes(encoding=serialization.Encoding.PEM,
+                                                     format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
+        content = save_pem(p + y + dsa_bytes, "ELGAMAL PUBLIC KEY")
 
         with open(pem_file_path, 'wb') as pem_file:
             pem_file.write(content)
@@ -72,9 +81,8 @@ class ElgamalPrivateKeyRing(PrivateKeyRing):
     def decrypt_session_key(self, encrypted_session_key):
         a = encrypted_session_key[:256]
         b = encrypted_session_key[256:512]
-        c = Elgamal.decrypt(CipherText(bytes_to_int(a), bytes_to_int(b)), self.private_key_elgamal)
-        return a
 
+        return Elgamal.decrypt(CipherText(bytes_to_int(a), bytes_to_int(b)), self.private_key_elgamal)
 
     def get_public_key_as_string(self):
         return self.public_key_elgamal.__str__()

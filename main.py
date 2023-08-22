@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from gui.screens.HomeScreen import HomeScreen
+from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
 
 def main():

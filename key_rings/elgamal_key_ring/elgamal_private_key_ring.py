@@ -1,7 +1,7 @@
 import json
 import re
 
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric.dsa import DSAPrivateKey, DSAPublicKey
 from cryptography.utils import int_to_bytes
 from elgamal.elgamal import PrivateKey, PublicKey, Elgamal, CipherText
@@ -75,8 +75,7 @@ class ElgamalPrivateKeyRing(PrivateKeyRing):
         pass
 
     def sign_message(self, message):
-        return NotImplemented
-        pass
+        return self.private_key_dsa.sign(message, hashes.SHA1())
 
     def decrypt_session_key(self, encrypted_session_key):
         a = encrypted_session_key[:256]

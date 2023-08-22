@@ -1,7 +1,7 @@
 import json
 import re
 
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric.dsa import DSAPublicKey
 from cryptography.utils import int_to_bytes
 from elgamal.elgamal import Elgamal, CipherText
@@ -58,7 +58,11 @@ class ElgamalPublicKeyRing(PublicKeyRing):
         PublicKeyRing.insert_row(email, elgamal_key_ring)
 
     def verify_sign(self, message, message_digest):
-        return NotImplemented
+        try:
+            self.public_key_dsa.verify(message, message_digest, hashes.SHA1())
+            return True
+        except Exception:
+            return False
         pass
 
     def get_public_key_as_string(self):

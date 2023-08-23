@@ -1,6 +1,8 @@
 import base64
+import io
 import json
 import tkinter as tk
+import zipfile
 from tkinter import ttk, TOP, RIGHT, BOTTOM, LEFT
 import datetime
 
@@ -87,12 +89,22 @@ class SendMessageDialog:
                     "timestamp": timestamp_signature
                 }
 
+            data_to_send = None
+            compress = compress_enabled.get()
+            if compress == 1:
+                buffer = io.BytesIO()
+                with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                    zipf.writestr('data.txt', json.dumps(package))
+                data_to_send = buffer.getvalue()
+            else:
+                data_to_send = json.dumps(package)
+
             # encrypt message with selected algorithm
             key_cipher_tuple = ()
             if v.get() == "aes":
-                key_cipher_tuple = aes_encrypt(json.dumps(package))
+                key_cipher_tuple = aes_encrypt(data_to_send)
             elif v.get() == "des":
-                key_cipher_tuple = encrypt_message(json.dumps(package))
+                key_cipher_tuple = encrypt_message(data_to_send)
 
             encrypted_session_key = self.ring.encrypt_session_key(key_cipher_tuple[0])
             key_id_recipient_public_key = self.ring.key_id
@@ -100,15 +112,11 @@ class SendMessageDialog:
                 "session_key_component": {
                     "session_key": base64.b64encode(encrypted_session_key).decode('utf-8'),
                     "key_id_of_recipient_public_key": key_id_recipient_public_key,
-                    "algorithm": "des" if v.get() == "des" else "aes"
+                    "algorithm": "des" if v.get() == "des" else "aes",
+                    "compress": compress
                 },
                 "encrypted_data": base64.b64encode(key_cipher_tuple[1]).decode('utf-8')
             }
-
-            # compress message if needed
-            if compress_enabled.get() == 1:
-                # compress message (zip)
-                pass
 
             # convert message if needed
             if convert_enabled.get() == 1:

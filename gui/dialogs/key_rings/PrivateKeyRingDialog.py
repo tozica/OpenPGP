@@ -1,6 +1,8 @@
 import base64
+import io
 import json
 import tkinter as tk
+import zipfile
 from tkinter import ttk
 from tkinter.constants import TOP, RIGHT
 
@@ -69,16 +71,30 @@ class PrivateKeyRingDialog:
         key_id_of_recipient_public_key = unpacked_package["session_key_component"]["key_id_of_recipient_public_key"]
         algorithm = unpacked_package["session_key_component"]["algorithm"]
         encrypted_data = base64.b64decode(unpacked_package["encrypted_data"])
+        compress = unpacked_package["session_key_component"]["compress"]
 
         private_key_ring = PrivateKeyRing.find_key_by_id(key_id_of_recipient_public_key)
         session_key = private_key_ring.decrypt_session_key(encrypted_session_key)
-        message_and_signature = None
 
+        decrypted_message = None
         if algorithm == "des":
-            message_and_signature = json.loads(decrypt_message(encrypted_data, session_key).decode())
+            decrypted_message = decrypt_message(encrypted_data, session_key)
         elif algorithm == "aes":
-            message_and_signature = json.loads(aes_decrypt(encrypted_data, session_key).decode())
-            pass
+            decrypted_message = aes_decrypt(encrypted_data, session_key)
+
+        if compress == 1:
+            try:
+                byte_stream = io.BytesIO(decrypted_message)
+                zip_file = zipfile.ZipFile(byte_stream, 'r')
+
+                file_contents = zip_file.read('data.txt')
+                decrypted_message = file_contents.decode('utf-8')
+
+            except Exception as ex:
+                aaa = "a"
+                pass
+
+        message_and_signature = json.loads(decrypted_message)
 
         # verify signature if needed
         if message_and_signature.get("signature", None) is not None:

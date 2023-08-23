@@ -80,7 +80,7 @@ class PrivateKeyRingDialog:
         if algorithm == "des":
             decrypted_message = decrypt_message(encrypted_data, session_key)
         elif algorithm == "aes":
-            decrypted_message = aes_decrypt(encrypted_data, session_key)
+            decrypted_message = aes_decrypt(bytes(session_key), encrypted_data)
 
         if compress == 1:
             try:

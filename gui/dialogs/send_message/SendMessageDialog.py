@@ -8,7 +8,7 @@ import datetime
 
 from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.sign_message.SignMessageDialog import SignMessageDialog
-from utils.aes_utils.aes_utils import aes_encrypt
+from utils.aes_utils.aes_utils import aes_encrypt, aes_decrypt
 from utils.des3_utils.des3_utils import encrypt_message
 
 
@@ -89,6 +89,7 @@ class SendMessageDialog:
                     "timestamp": timestamp_signature
                 }
 
+            # compress data
             data_to_send = None
             compress = compress_enabled.get()
             if compress == 1:

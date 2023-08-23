@@ -16,7 +16,9 @@ class ReceiveMessageDialog:
         self.timestamp = message_and_signature["message"]["timestamp"]
         self.data = message_and_signature["message"]["data"]
         self.file_name = message_and_signature["message"]["filename"]
-        public_sender_key = PublicKeyRing.find_key_by_id(message_and_signature["signature"]["key_id_sender_public_key"])
+        public_sender_key = None
+        if message_and_signature.get("signature", None) is not None:
+            public_sender_key = PublicKeyRing.find_key_by_id(message_and_signature["signature"]["key_id_sender_public_key"])
         self.sender_email = public_sender_key.email if public_sender_key is not None else None
         self.receiver_email = receiver_email
 
@@ -31,10 +33,10 @@ class ReceiveMessageDialog:
         information_frame.pack(side=TOP)
 
         ttk.Label(information_frame, text="Timestamp: " + self.timestamp).grid(row=0, column=0, sticky="w")
-        ttk.Label(information_frame, text="Sender's email: " + self.sender_email).grid(row=1, column=0, sticky="w")
+        ttk.Label(information_frame, text="Sender's email: " + self.sender_email if self.sender_email is not None else "/").grid(row=1, column=0, sticky="w")
         ttk.Label(information_frame, text="Receiver's email: " + self.receiver_email).grid(row=2, column=0, sticky="w")
         ttk.Label(information_frame, text="Received from inbox: " + self.file_name).grid(row=3, column=0, sticky="w")
-        ttk.Label(information_frame, text="Message is signed: " + "YES" if self.sender_email is not None else "NO").grid(row=3, column=0, sticky="w")
+        ttk.Label(information_frame, text="Message is signed: " + "YES" if self.sender_email is not None else "NO").grid(row=4, column=0, sticky="w")
 
         data_frame = ttk.Frame(self.dialog_frame)
         data_frame.pack(side=BOTTOM)

@@ -73,7 +73,7 @@ class GenerateKeyForm:
                 PrivateKeyRing.insert_row(email, rsa_key_ring)
 
             elif selected_algorithm == "Elgamal & DSA":
-                (public_elgamal, private_elgamal) = Elgamal.newkeys(int(key_size))
+                (public_elgamal, private_elgamal) = Elgamal.newkeys(int(key_size) // 16)
 
                 private_key_dsa: DSAPrivateKey = dsa.generate_private_key(key_size=1024)
 

@@ -5,7 +5,8 @@ from tkinter.messagebox import showinfo
 class FilePicker:
     def __init__(self):
         filetypes = (
-            ('text files', '*.txt'),
+            ('Pem files', '*.pem'),
+            ('Text files', '*.txt'),
             ('All files', '*.*')
         )
 

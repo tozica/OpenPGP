@@ -1,7 +1,6 @@
 import json
 import re
 import tkinter as tk
-from os import path
 from tkinter import ttk, TOP, RIGHT
 
 from gui.dialogs.general.FilePicker import FilePicker
@@ -57,6 +56,9 @@ class PublicKeyRingDialog:
 
     def import_public_ring(self, email):
         file_picker = FilePicker()
+
+        if file_picker.filename == '':
+            return
 
         metadata = self.get_methadata(file_picker.filename)
 

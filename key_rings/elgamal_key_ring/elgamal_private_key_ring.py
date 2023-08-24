@@ -1,3 +1,4 @@
+import base64
 import json
 import re
 
@@ -5,7 +6,8 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric.dsa import DSAPrivateKey, DSAPublicKey
 from cryptography.utils import int_to_bytes
 from elgamal.elgamal import PrivateKey, PublicKey, Elgamal, CipherText
-from rsa.pem import save_pem
+from rsa.pem import save_pem, load_pem
+
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 from utils.des3_utils.des3_utils import bytes_to_int
 
@@ -54,21 +56,65 @@ class ElgamalPrivateKeyRing(PrivateKeyRing):
             pem_file.write(content)
 
     def export_private_key(self, path):
-        pass
+        pem_file_path = path + '/' + self.user_name + '_private.pem'
+        metadata_file_path = path + '/' + '.metadata'
+        metadata = {
+            "timestamp": str(self.timestamp),
+            "key_id": self.key_id,
+            "user_id": self.user_id,
+            "email": self.email,
+            "algorithm": self.algorithm,
+            "user_name": self.user_name,
+            "key_size": self.key_size,
+            "encrypted_private_key": base64.b64encode(self.encrypted_private_key).decode('utf-8'),
+            "key_from_password": base64.b64encode(self.key_from_password).decode('utf-8')
+        }
+
+        with open(metadata_file_path, 'w', encoding='utf-8') as metadata_file:
+            json.dump(metadata, metadata_file, ensure_ascii=False, indent=4)
+
+        p = int_to_bytes(self.public_key_elgamal.p, 256)
+        x = int_to_bytes(self.private_key_elgamal.x, 256)
+        y = int_to_bytes(self.public_key_elgamal.y, 256)
+
+        dsa_bytes = self.private_key_dsa.private_bytes(encoding=serialization.Encoding.PEM,
+                                                       format=serialization.PrivateFormat.PKCS8,
+                                                       encryption_algorithm=serialization.NoEncryption())
+
+        content = save_pem(p + y + x + dsa_bytes, "ELGAMAL PRIVATE KEY")
+
+        with open(pem_file_path, 'wb') as pem_file:
+            pem_file.write(content)
+
 
     @classmethod
     def import_private_key(cls, path):
-        pem_file_path = path
         file_name = path.split("/")[len(path.split("/")) - 1]
         metadata_file_path = re.sub(file_name, ".metadata", path)
 
-        with open(pem_file_path, mode='rb') as pem_file:
+        with open(path, mode='rb') as pem_file:
             public_key_pem_content = pem_file.read()
 
         with open(metadata_file_path, mode='r') as metadata_file:
             metadata = json.load(metadata_file)
 
-        return metadata
+        pem = load_pem(public_key_pem_content, "ELGAMAL PRIVATE KEY")
+
+        p = pem[:256]
+        y = pem[256:512]
+        x = pem[512:768]
+        dsa = pem[768:]
+
+        elgamal_private = PrivateKey(bytes_to_int(p), bytes_to_int(x))
+        elgamal_public = PublicKey(bytes_to_int(p), Elgamal.get_g(bytes_to_int(p)), bytes_to_int(y))
+        dsa_private = serialization.load_pem_private_key(dsa, None)
+
+        elgamal_key_ring = ElgamalPrivateKeyRing(metadata["timestamp"], metadata["user_id"], metadata["email"],
+                                                 metadata["algorithm"], metadata["key_size"], metadata["user_name"],
+                                                 metadata["encrypted_private_key"], metadata["key_from_password"],
+                                                 elgamal_private, elgamal_public, dsa_private)
+
+        PrivateKeyRing.insert_row(metadata["email"], elgamal_key_ring)
 
     @classmethod
     def import_public_key(cls, path, metadata, email):

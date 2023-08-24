@@ -1,17 +1,21 @@
 import base64
 import io
 import json
+import re
 import tkinter as tk
 import zipfile
 from tkinter import ttk
 from tkinter.constants import TOP, RIGHT
 
 from gui.dialogs.general.FilePicker import FilePicker
+from gui.dialogs.general.FolderPicker import FolderPicker
 from gui.dialogs.receive_message.ReceiveMessageDialog import ReceiveMessageDialog
 from gui.tables.key_rings.PrivateKeyRingTable import PrivateKeyRingTable
 from gui.tables.user.UserDetailsTable import UserDetailsTable
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 from key_rings.base_key_ring.public_key_ring import PublicKeyRing
+from key_rings.elgamal_key_ring.elgamal_private_key_ring import ElgamalPrivateKeyRing
+from key_rings.rsa_key_ring.rsa_private_key_ring import RSAPrivateKeyRing
 from utils.aes_utils.aes_utils import aes_decrypt
 from utils.des3_utils.des3_utils import decrypt_message
 
@@ -47,12 +51,32 @@ class PrivateKeyRingDialog:
                                     command=lambda: self.receive_message())
         receive_button.pack(side=RIGHT)
 
+        import_private_key_button = ttk.Button(user_information_fame, text="Import Private Key",
+                                               command=self.import_private_ring)
+        import_private_key_button.pack(side=RIGHT)
+
         PrivateKeyRingTable(self.root, self.dialog_frame, self, self.email, self.key_rings)
 
         confirm_button = ttk.Button(user_information_fame, text="Close",
                                     command=lambda: self.dialog_private_key_table.destroy())
         confirm_button.pack(side=RIGHT)
-        pass
+
+    @staticmethod
+    def import_private_ring():
+        file_picker = FilePicker()
+        if file_picker.filename != '':
+            path = file_picker.filename
+            pem_file_path = path
+            file_name = path.split("/")[len(path.split("/")) - 1]
+            metadata_file_path = re.sub(file_name, ".metadata", path)
+
+            with open(metadata_file_path, mode='r') as metadata_file:
+                metadata = json.load(metadata_file)
+
+            if metadata["algorithm"] == "RSA":
+                RSAPrivateKeyRing.import_private_key(pem_file_path)
+            else:
+                ElgamalPrivateKeyRing.import_private_key(pem_file_path)
 
     def render(self):
         self.clear_window()

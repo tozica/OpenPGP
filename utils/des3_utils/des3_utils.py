@@ -17,7 +17,7 @@ def unpad_plaintext(padded_plaintext):
 
 
 def derive_key_from_password(password, salt, iterations=10000, key_length=24):
-    key = hashlib.pbkdf2_hmac('sha512', password.encode(), salt, iterations, dklen=key_length)
+    key = hashlib.pbkdf2_hmac('sha512', password.encode(), "a".encode(), iterations, dklen=key_length)
 
     return key
 

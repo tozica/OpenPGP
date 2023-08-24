@@ -1,5 +1,7 @@
 from tkinter import ttk, BOTTOM
+
 from gui.dialogs.general.FolderPicker import FolderPicker
+from gui.dialogs.general.PasswordConfirmForm import PasswordConfirmForm
 from gui.dialogs.general.TextPreviewPopup import TextPreviewPopup
 from key_rings.base_key_ring.private_key_ring import PrivateKeyRing
 
@@ -51,7 +53,7 @@ class PrivateKeyRingTable:
                 if columns[col_idx] == "Encrypted Private Key":
                     cell_label.bind("<Button-1>",
                                     lambda event, arg=ring:
-                                    TextPreviewPopup(self.root, ring.get_private_key_as_string(), "N"))
+                                    PasswordConfirmForm(self.root, self, ring.get_private_key_as_string(), ring, "N"))
 
             actions_frame = ttk.Frame(table_frame)
             actions_frame.grid(row=row_idx + 2, column=5, sticky="nsew")
@@ -59,11 +61,12 @@ class PrivateKeyRingTable:
                                                    command=lambda arg=ring: self.export_private_ring(arg))
             export_public_key_button = ttk.Button(actions_frame, text="Export Public Key",
                                                   command=lambda arg=ring: self.export_public_ring(arg))
+
             delete_key_ring_button = ttk.Button(actions_frame, text="Delete Key Ring",
                                                 command=lambda arg=ring: self.delete_from_table(arg))
             export_private_key_button.grid(row=0, column=0)
             export_public_key_button.grid(row=0, column=1)
-            delete_key_ring_button.grid(row=0, column=2)
+            delete_key_ring_button.grid(row=0, column=3)
 
         for row_idx in range(len(self.button_data) + 2):
             table_frame.grid_rowconfigure(row_idx, weight=1)
@@ -78,9 +81,13 @@ class PrivateKeyRingTable:
     @staticmethod
     def export_private_ring(ring: PrivateKeyRing):
         file_picker = FolderPicker()
-        ring.export_private_key(file_picker.directory)
+        if file_picker.directory != '':
+            ring.export_private_key(file_picker.directory)
+
+
 
     @staticmethod
     def export_public_ring(ring: PrivateKeyRing):
         file_picker = FolderPicker()
-        ring.export_public_key(file_picker.directory)
+        if file_picker.directory != '':
+            ring.export_public_key(file_picker.directory)

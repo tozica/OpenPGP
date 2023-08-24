@@ -1,3 +1,4 @@
+import base64
 import re
 import string
 import rsa
@@ -51,7 +52,9 @@ class RSAPrivateKeyRing(PrivateKeyRing):
             "email": self.email,
             "algorithm": self.algorithm,
             "user_name": self.user_name,
-            "key_size": self.key_size
+            "key_size": self.key_size,
+            "encrypted_private_key": base64.b64encode(self.encrypted_private_key).decode('utf-8'),
+            "key_from_password": base64.b64encode(self.key_from_password).decode('utf-8')
         }
         with open(metadata_file_path, 'w', encoding='utf-8') as metadata_file:
             json.dump(metadata, metadata_file, ensure_ascii=False, indent=4)
@@ -60,8 +63,6 @@ class RSAPrivateKeyRing(PrivateKeyRing):
 
         with open(pem_file_path, 'wb') as pem_file:
             pem_file.write(private_key_pem_content)
-
-        pass
 
     @classmethod
     def import_private_key(cls, path: str):
@@ -72,29 +73,21 @@ class RSAPrivateKeyRing(PrivateKeyRing):
         with open(pem_file_path, mode='rb') as pem_file:
             private_key_pem_content = pem_file.read()
 
-        private_key_rsa = rs.key.PrivateKey.load_pkcs1(private_key_pem_content)
+        private_key_rsa: PrivateKey = rs.key.PrivateKey.load_pkcs1(private_key_pem_content)
 
         with open(metadata_file_path, mode='r') as metadata_file:
             metadata = json.load(metadata_file)
 
-        # still not done
-        pass
+        rsa_key_ring = RSAPrivateKeyRing(metadata["timestamp"], metadata["user_id"], metadata["email"],
+                                         metadata["algorithm"], metadata["key_size"], metadata["user_name"],
+                                         base64.b64decode(metadata["encrypted_private_key"]),
+                                         base64.b64decode(metadata["key_from_password"]),
+                                         private_key_rsa, rsa.PublicKey(private_key_rsa.n, private_key_rsa.e))
+
+        PrivateKeyRing.insert_row(metadata["email"], rsa_key_ring)
 
     @classmethod
     def import_public_key(cls, path, metadata, email):
-        pem_file_path = path
-        file_name = path.split("/")[len(path.split("/")) - 1]
-        metadata_file_path = re.sub(file_name, ".metadata", path)
-
-        with open(pem_file_path, mode='rb') as pem_file:
-            public_key_pem_content = pem_file.read()
-
-        public_key_rsa = rs.key.PublicKey.load_pkcs1(public_key_pem_content)
-
-        with open(metadata_file_path, mode='r') as metadata_file:
-            metadata = json.load(metadata_file)
-
-        # still not done
         pass
 
     def sign_message(self, message: string):
